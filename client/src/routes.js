@@ -5,7 +5,6 @@ import SimpleLayout from './layouts/simple';
 //
 import BlogPage from './pages/BlogPage';
 import UserPage from './pages/UserPage';
-import LoginPage from './pages/LoginPage';
 import Page404 from './pages/Page404';
 import ProductsPage from './pages/ProductsPage';
 import DashboardAppPage from './pages/DashboardAppPage';
@@ -13,6 +12,11 @@ import DashboardAppPage from './pages/DashboardAppPage';
 import UsersList from './views/admin/users';
 import AddUser from './views/admin/users/addUser';
 import EditUser from './views/admin/users/editUser';
+import StoresList from './views/admin/stores';
+import AddStore from './views/admin/stores/addStore';
+import EditStore from './views/admin/stores/editStore';
+import LoginPage from './views/auth/loginPage';
+
 
 export default function Router() {
   const routes = useRoutes([
@@ -28,6 +32,9 @@ export default function Router() {
         { path: 'users', element: <UsersList/> },
         { path: 'add-user', element: <AddUser/> },
         { path: 'edit-user/:id', element: <EditUser/> },
+        { path: 'stores', element: <StoresList/> },
+        { path: 'add-store', element: <AddStore/> },
+        { path: 'edit-store/:id', element: <EditStore/> },
       ],
     },
     {

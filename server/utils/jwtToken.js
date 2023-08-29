@@ -10,16 +10,11 @@ const sendToken = (user, statusCode, res) => {
         secure: true,
         samesite: 'none',
     }
-   const hat =  res.status(statusCode).cookie('token', token, options).json({
+    res.status(statusCode).cookie('token', token, options).json({
         success: true,
         token,
         user
     })
-
-    console.log(hat)
-
-    
-  
   }
   
   module.exports = sendToken;

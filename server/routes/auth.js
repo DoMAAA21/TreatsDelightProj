@@ -14,9 +14,9 @@ const router = express.Router();
 const {
   //   registerUser,
 
-  //   loginUser,
+    loginUser,
 
-  //   logout,
+    logout,
   //   googlelogin,
 
 
@@ -65,12 +65,12 @@ router.post("/admin/user/new", upload.single("avatar"), newUser);
 
 // router.post("/register", upload.single("avatar"), registerUser);
 
-// router.post("/login", loginUser);
+router.post("/login", loginUser);
 
 // router.post("/googlelogin", googlelogin);
 
 
-// router.route("/logout").get(logout);
+router.get("/logout",logout);
 
 
 

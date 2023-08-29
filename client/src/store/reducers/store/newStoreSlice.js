@@ -6,10 +6,10 @@ const initialState = {
   loading: false,
   success: false,
   error: null,
-  users: [], 
+  stores: [], // Initialize stores with your desired initial value
 };
 
-export const newUser = createAsyncThunk('newUser/newUser', async (userData, { rejectWithValue }) => {
+export const newStore = createAsyncThunk('newStore/newStore', async (storeData, { rejectWithValue }) => {
     try {
       const config = {
         headers: {
@@ -17,7 +17,7 @@ export const newUser = createAsyncThunk('newUser/newUser', async (userData, { re
         },
       };
   
-      const { data } = await axios.post(`${process.env.REACT_APP_API}/api/v1/admin/user/new`, userData, { withCredentials: true }, config);
+      const { data } = await axios.post(`${process.env.REACT_APP_API}/api/v1/admin/store/new`, storeData, { withCredentials: true }, config);
   
       return data;
     } catch (error) 
@@ -26,26 +26,26 @@ export const newUser = createAsyncThunk('newUser/newUser', async (userData, { re
     }
   });
 
-const newUserSlice = createSlice({
-  name: 'newUser',
+const newStoreSlice = createSlice({
+  name: 'newStore',
   initialState,
   reducers: {
     updateField: (state, action) => {
       state[action.payload.name] = action.payload.value;
     },
-    newUserRequest: (state) => {
+    newStoreRequest: (state) => {
       state.loading = true;
     },
-    newUserSuccess: (state, action) => {
+    newStoreSuccess: (state, action) => {
       state.loading = false;
       state.success = action.payload.success;
-      state.users = action.payload.user;
+      state.stores = action.payload.store;
     },
-    newUserFail: (state, action) => {
+    newStoreFail: (state, action) => {
       state.loading = false;
       state.error = action.payload;
     },
-    newUserReset: (state) => {
+    newStoreReset: (state) => {
       state.success = false;
       state.error = null;
     },
@@ -56,15 +56,15 @@ const newUserSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(newUser.pending, (state) => {
+      .addCase(newStore.pending, (state) => {
         state.loading = true;
       })
-      .addCase(newUser.fulfilled, (state, action) => {
+      .addCase(newStore.fulfilled, (state, action) => {
         state.loading = false;
         state.success = action.payload.success;
-        state.users = action.payload.product;
+        state.stores = action.payload.product;
       })
-      .addCase(newUser.rejected, (state, action) => {
+      .addCase(newStore.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
@@ -73,10 +73,10 @@ const newUserSlice = createSlice({
 
 export const {
   updateField,
-  newUserRequest,
-  newUserSuccess,
-  newUserFail,
-  newUserReset,
-} = newUserSlice.actions;
+  newStoreRequest,
+  newStoreSuccess,
+  newStoreFail,
+  newStoreReset,
+} = newStoreSlice.actions;
 
-export default newUserSlice.reducer;
+export default newStoreSlice.reducer;

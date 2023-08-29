@@ -1,10 +1,13 @@
 import { useState } from 'react';
+import { useDispatch, useSelector } from "react-redux";
+import { Link ,useNavigate} from "react-router-dom";
 // @mui
 import { alpha } from '@mui/material/styles';
 import { Box, Divider, Typography, Stack, MenuItem, Avatar, IconButton, Popover } from '@mui/material';
+import Swal from 'sweetalert2';
 // mocks_
 import account from '../../../_mock/account';
-
+import { logout } from '../../../store/reducers/auth/authenticationSlice';
 // ----------------------------------------------------------------------
 
 const MENU_OPTIONS = [
@@ -22,17 +25,52 @@ const MENU_OPTIONS = [
   },
 ];
 
+const successMsg = (message = '') =>
+    Swal.fire({
+        title: `Success`,
+        text: `${message}`,
+        icon: 'success',
+        timer: 3500,
+        timerProgressBar: true,
+        toast: true,
+        position: 'bottom-end',
+        showConfirmButton: false,
+    });
+
+const errorMsg = (message = '') =>
+    Swal.fire({
+        title: `Error`,
+        text: `${message}`,
+        icon: 'error',
+        iconColor: 'white',
+        timer: 3500,
+        timerProgressBar: true,
+        toast: true,
+        position: 'bottom-end',
+        background: 'red',
+        color: 'white',
+        showConfirmButton: false,
+    });
 // ----------------------------------------------------------------------
 
 export default function AccountPopover() {
   const [open, setOpen] = useState(null);
-
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const handleOpen = (event) => {
     setOpen(event.currentTarget);
   };
 
   const handleClose = () => {
     setOpen(null);
+  };
+
+  const logoutHandler = () => {
+    dispatch(logout());
+
+    navigate('/login')
+
+    successMsg("Logged Out Successfully");
   };
 
   return (
@@ -97,7 +135,7 @@ export default function AccountPopover() {
 
         <Divider sx={{ borderStyle: 'dashed' }} />
 
-        <MenuItem onClick={handleClose} sx={{ m: 1 }}>
+        <MenuItem onClick={logoutHandler} sx={{ m: 1 }}>
           Logout
         </MenuItem>
       </Popover>

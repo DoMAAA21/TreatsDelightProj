@@ -1,13 +1,13 @@
 import React, { Fragment, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { MDBDataTable } from 'mdbreact'
-import { TextField, FormControl, Button, Grid, Card, CardContent, Skeleton } from "@mui/material";
+import {  Button, Skeleton, Box,Typography, TableCell } from "@mui/material";
 import { useDispatch, useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
 import { Icon } from '@iconify/react';
 import MetaData from '../../layouts/metadata'
-import { fetchAllUsers } from '../../../store/reducers/auth/allUsersSlice';
-import { deleteUser, deleteUserReset } from '../../../store/reducers/auth/userSlice';
+import { fetchAllStores } from '../../../store/reducers/store/allStoresSlice';
+import { deleteStore, deleteStoreReset } from '../../../store/reducers/store/storeSlice';
 import { SkeletonTableLoader } from '../../layouts/skeletonLoaders';
 
 const successMsg = (message = '') =>
@@ -34,31 +34,36 @@ const errorMsg = (message = '') =>
     showConfirmButton: false,
   });
 
-const UsersList = () => {
+const StoresList = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { loading, error, users } = useSelector(state => state.allUsers);
-  const { isDeleted } = useSelector(state => state.user)
+  const { loading, error, stores } = useSelector(state => state.allStores);
+  const { isDeleted } = useSelector(state => state.store)
 
   useEffect(() => {
-    // Dispatch the async action to fetch users when the component mounts
-    dispatch(fetchAllUsers());
+    dispatch(fetchAllStores());
+
+    // if(error){
+
+    // }
 
     if (isDeleted) {
       console.log('deleted')
 
-      successMsg('User deleted successfully');
+      successMsg('Store deleted successfully');
 
-      navigate('/dashboard/users');
+      navigate('/dashboard/stores');
 
-      dispatch(deleteUserReset())
+      dispatch(deleteStoreReset())
     }
   }, [dispatch, error, isDeleted, navigate])
 
+  
 
+console.log(stores)
 
-  const deleteUserHandler = (id) => {
+  const deleteStoreHandler = (id) => {
 
 
     Swal.fire({
@@ -71,10 +76,10 @@ const UsersList = () => {
       confirmButtonText: 'Yes, delete it!'
     }).then((result) => {
       if (result.isConfirmed) {
-        dispatch(deleteUser(id))
+        dispatch(deleteStore(id))
         Swal.fire(
           'Deleted!',
-          'User has been deleted.',
+          'Store has been deleted.',
           'success'
         )
       }
@@ -86,49 +91,43 @@ const UsersList = () => {
 
 
 
-  const setUsers = () => {
+  const setStores = () => {
 
     const data = {
 
       columns: [
 
         {
-          label: 'User ID',
+          label: 'Store ID',
           field: 'id',
           sort: 'asc',
           className: 'text-uppercase text-secondary text-xxs font-weight-bolder opacity-7'
         },
 
         {
-          label: 'Surname',
-          field: 'lname',
+          label: 'Name',
+          field: 'name',
           sort: 'asc',
         },
         {
-          label: 'First Name',
-          field: 'fname',
+          label: 'Slogan',
+          field: 'slogan',
           sort: 'asc',
         },
         {
-          label: 'Course',
-          field: 'course',
+          label: 'Stall',
+          field: 'stall',
           sort: 'asc',
         },
         {
-          label: 'Religion',
-          field: 'religion',
-          sort: 'asc',
-        },
-
-        {
-          label: 'Email',
-          field: 'email',
+          label: 'Location',
+          field: 'location',
           sort: 'asc',
         },
 
         {
-          label: 'Role',
-          field: 'role',
+          label: 'Active',
+          field: 'active',
           sort: 'asc',
         },
 
@@ -143,31 +142,22 @@ const UsersList = () => {
 
     }
 
-    users.forEach(user => {
+    stores.forEach(store => {
 
       data.rows.push({
-        id: user._id,
-        fname: user.fname,
-        lname: user.lname,
-        course: user.course,
-        religion: user.religion,
-        email: user.email,
-        role: user.role,
-
+        id: store._id,
+        name: store.name,
+        slogan: store.slogan,
+        stall: store.stall,
+        location: store.location,
+        active: store.active.toString(),
         actions: <>
-
-          <Link to={`/dashboard/edit-user/${user._id}`} className="btn btn-primary py-1 px-2">
-
+        <Link to={`/dashboard/edit-store/${store._id}`} className="btn btn-primary py-1 px-2">
             <Icon icon="uil:edit" width={30} height={30} />
-
-
-          </Link>
-
-          <button className="btn btn-danger py-1 px-2 ml-2" onClick={() => deleteUserHandler(user._id)}>
-
+        </Link>
+        <button className="btn btn-danger py-1 px-2 ml-2" onClick={() => deleteStoreHandler(store._id)}>
             <Icon icon="ic:twotone-delete" width={30} height={30} />
-
-          </button>
+        </button>
 
         </>
 
@@ -184,7 +174,7 @@ const UsersList = () => {
   return (
 
     <>
-      <MetaData title={'All Users'} />
+      <MetaData title={'All Stores'} />
 
       <div
         style={{
@@ -197,23 +187,23 @@ const UsersList = () => {
         }}
       >
         <div>
-          <h2>All Users</h2>
+          <h2>All Stores</h2>
         </div>
         <div>
           <Button
             variant="contained"
             component={Link}
-            to="/dashboard/add-user"
+            to="/dashboard/add-store"
             style={{
               marginLeft: '10px', // Add margin-left to separate the button
             }}
           >
-            Add User
+            Add Store
           </Button>
         </div>
       </div>
       {loading ? (
-        <SkeletonTableLoader/>
+        <SkeletonTableLoader />
       ) : (
         <div
           style={{
@@ -225,7 +215,7 @@ const UsersList = () => {
           }}
         >
           <MDBDataTable
-            data={setUsers()}
+            data={setStores()}
             className="table table-striped"
             striped
             hover
@@ -242,6 +232,5 @@ const UsersList = () => {
 }
 
 
-
-export default UsersList
+export default StoresList
 
