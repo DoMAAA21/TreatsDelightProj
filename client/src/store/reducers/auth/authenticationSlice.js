@@ -19,7 +19,7 @@ export const login = createAsyncThunk('auth/login', async ({ email, password }, 
 
         const { data } = await axios.post(`${process.env.REACT_APP_API}/api/v1/login`, { email, password }, config);
         localStorage.setItem("user",JSON.stringify(data.user));
-        dispatch(loginSuccess())
+        dispatch(loginSuccess(data.user))
         return data.user;
     } catch (error) {
         dispatch(loginFail(error.response.data.message))

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useDispatch, useSelector } from "react-redux";
-import { Link ,useNavigate} from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 // @mui
 import { alpha } from '@mui/material/styles';
 import { Box, Divider, Typography, Stack, MenuItem, Avatar, IconButton, Popover } from '@mui/material';
@@ -26,37 +26,39 @@ const MENU_OPTIONS = [
 ];
 
 const successMsg = (message = '') =>
-    Swal.fire({
-        title: `Success`,
-        text: `${message}`,
-        icon: 'success',
-        timer: 3500,
-        timerProgressBar: true,
-        toast: true,
-        position: 'bottom-end',
-        showConfirmButton: false,
-    });
+  Swal.fire({
+    title: `Success`,
+    text: `${message}`,
+    icon: 'success',
+    timer: 3500,
+    timerProgressBar: true,
+    toast: true,
+    position: 'bottom-end',
+    showConfirmButton: false,
+  });
 
 const errorMsg = (message = '') =>
-    Swal.fire({
-        title: `Error`,
-        text: `${message}`,
-        icon: 'error',
-        iconColor: 'white',
-        timer: 3500,
-        timerProgressBar: true,
-        toast: true,
-        position: 'bottom-end',
-        background: 'red',
-        color: 'white',
-        showConfirmButton: false,
-    });
+  Swal.fire({
+    title: `Error`,
+    text: `${message}`,
+    icon: 'error',
+    iconColor: 'white',
+    timer: 3500,
+    timerProgressBar: true,
+    toast: true,
+    position: 'bottom-end',
+    background: 'red',
+    color: 'white',
+    showConfirmButton: false,
+  });
 // ----------------------------------------------------------------------
 
 export default function AccountPopover() {
   const [open, setOpen] = useState(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { user, loading } = useSelector((state) => state.auth);
+
   const handleOpen = (event) => {
     setOpen(event.currentTarget);
   };
@@ -92,7 +94,13 @@ export default function AccountPopover() {
           }),
         }}
       >
-        <Avatar src={account.photoURL} alt="photoURL" />
+        {user ? (
+          <Avatar src={user.avatar && user.avatar.url} alt="photoURL" />
+        ) : (
+          (
+            <Avatar src={account.photoURL} alt="photoURL" />
+          )
+        )}
       </IconButton>
 
       <Popover
@@ -114,30 +122,46 @@ export default function AccountPopover() {
           },
         }}
       >
-        <Box sx={{ my: 1.5, px: 2.5 }}>
-          <Typography variant="subtitle2" noWrap>
-            {account.displayName}
-          </Typography>
-          <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-            {account.email}
-          </Typography>
-        </Box>
+        {user ? (
+          <>
+            <Box sx={{ my: 1.5, px: 2.5 }}>
+              <Typography variant="subtitle2" noWrap>
+                {`${user.fname}  ${user.lname}`}
+              </Typography>
+              <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
+                {user.email}
+              </Typography>
+            </Box>
+            <Divider sx={{ borderStyle: 'dashed' }} />
 
-        <Divider sx={{ borderStyle: 'dashed' }} />
+            <Stack sx={{ p: 1 }}>
+              {MENU_OPTIONS.map((option) => (
+                <MenuItem key={option.label} onClick={handleClose}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </Stack>
 
-        <Stack sx={{ p: 1 }}>
-          {MENU_OPTIONS.map((option) => (
-            <MenuItem key={option.label} onClick={handleClose}>
-              {option.label}
+            <Divider sx={{ borderStyle: 'dashed' }} />
+
+            <MenuItem onClick={logoutHandler} sx={{ m: 1 }}>
+              Logout
             </MenuItem>
-          ))}
-        </Stack>
+          </>
+        )
+          : ((
+            <>
+              <Divider  />
 
-        <Divider sx={{ borderStyle: 'dashed' }} />
+              <MenuItem component={Link} to ="/login" sx={{ m: 1}}>
+                Login
+              </MenuItem>
+            </>
+          ))
+        }
 
-        <MenuItem onClick={logoutHandler} sx={{ m: 1 }}>
-          Logout
-        </MenuItem>
+
+
       </Popover>
     </>
   );

@@ -57,11 +57,12 @@ export default function LoginForm() {
   );
 
   useEffect(() => {
+    if(isAuthenticated) navigate("/");
     if (isAuthenticated && redirect === "shipping") {
       successMsg('Logged In');
       navigate(`/${redirect}`, { replace: true });
     } 
-    if(isAuthenticated) navigate("/");
+    
 
     if (error) {
       dispatch(clearErrors());
