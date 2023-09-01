@@ -1,44 +1,67 @@
-import { createSlice,createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
 const initialState = {
-  user: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')): null,
+  user: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null,
   loading: false,
   isAuthenticated: localStorage.getItem('user'),
   error: null,
 };
 
-export const login = createAsyncThunk('auth/login', async ({ email, password }, { rejectWithValue,dispatch }) => {
-    try {
-        const config = {
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            withCredentials: true,
-        };
+export const login = createAsyncThunk('auth/login', async ({ email, password }, { rejectWithValue, dispatch }) => {
+  try {
+    dispatch(loginRequest())
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      withCredentials: true,
+    };
 
-        const { data } = await axios.post(`${process.env.REACT_APP_API}/api/v1/login`, { email, password }, config);
-        localStorage.setItem("user",JSON.stringify(data.user));
-        dispatch(loginSuccess(data.user))
-        return data.user;
-    } catch (error) {
-        dispatch(loginFail(error.response.data.message))
-        return rejectWithValue(error.response.data.message);
-    }
-});
-
-
-export const logout = createAsyncThunk('auth/logout', async (_, { rejectWithValue,dispatch }) => {
-  try { 
-      const { data } = await axios.get(`${process.env.REACT_APP_API}/api/v1/logout`, {withCredentials:true});
-      localStorage.removeItem("user");
-      
-      return dispatch(logoutSuccess())
+    const { data } = await axios.post(`${process.env.REACT_APP_API}/api/v1/login`, { email, password }, config);
+    localStorage.setItem("user", JSON.stringify(data.user));
+    dispatch(loginSuccess(data.user))
+    return data.user;
   } catch (error) {
-      dispatch(loginFail(error.response.data.message))
-      return rejectWithValue(error.response.data.message);
+    dispatch(loginFail(error.response.data.message))
+    return rejectWithValue(error.response.data.message);
   }
 });
+
+
+export const logout = createAsyncThunk('auth/logout', async (_, { rejectWithValue, dispatch }) => {
+  try {
+    const { data } = await axios.get(`${process.env.REACT_APP_API}/api/v1/logout`, { withCredentials: true });
+    localStorage.removeItem("user");
+
+    return dispatch(logoutSuccess())
+  } catch (error) {
+    dispatch(loginFail(error.response.data.message))
+    return rejectWithValue(error.response.data.message);
+  }
+});
+
+
+export const registerUser = createAsyncThunk('auth/register', async (userData, { rejectWithValue, dispatch }) => {
+  try {
+    dispatch(registerUserRequest())
+    const config = {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      withCredentials: true,
+    };
+    const response = await axios.post(`${process.env.REACT_APP_API}/api/v1/register`, userData,{withCredentials:true}, config);
+    const data = response.data;
+    localStorage.setItem('user', JSON.stringify(data.user));
+    dispatch(registerUserSuccess(data.user))
+    return data.user;
+  } catch (error) {
+    dispatch(registerUserFail(error.response.data.message))
+    return rejectWithValue(error.response.data.message);
+  }
+}
+);
 
 
 

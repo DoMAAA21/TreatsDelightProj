@@ -116,8 +116,6 @@ exports.newUser = async (req, res, next) => {
       user,
     });
   } catch (error) {
-    // Handle errors, e.g., database errors or Cloudinary upload errors
-    console.error(error);
     res.status(500).json({
       success: false,
       message: 'An error occurred while creating the user.',
@@ -315,37 +313,34 @@ exports.logout = async (req, res, next) => {
   });
 };
 
-exports.registerUser = async (req, res, next) => {
-  const result = await cloudinary.uploader.upload(req.body.avatar, {
-    folder: 'avatars',
-    width: 150,
-    crop: "scale"
-  }, (err, res) => {
-    console.log(err, res);
-  });
-  // return console.log(result)
-  const { name,
-    email,
-    password,
 
-  } = req.body;
-  const user = await User.create({
-    name,
-    email,
-    password,
-    avatar: {
-      public_id: result.public_id,
-      url: result.secure_url
+exports.registerUser = async (req, res, next) => {
+  const { fname, lname, course, religion, email, password } = req.body;
+  try {
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: 'Email is already in use.' });
     }
 
-    // avatar: {
-    //     public_id: 'avatars/oqqqt5immgammiknebvc',
-    //     url: 'https://res.cloudinary.com/dgneiaky7/image/upload/v1649422734/avatars/oqqqt5immgammiknebvc.png'
-    // }
-  })
-
-  sendToken(user, 200, res)
+    const user = await User.create({
+      fname,
+      lname,
+      course,
+      religion,
+      email,
+      password,
+      avatar: {
+        public_id: 'avatars/oqqqt5immgammiknebvc',
+        url: 'https://res.cloudinary.com/djttinjoh/image/upload/v1693557721/avatars/obqkjcamxyukpcrqeui5.png',
+      },
+    });
+    sendToken(user, 200, res);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 };
+
 
 
 

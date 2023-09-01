@@ -12,7 +12,7 @@ const router = express.Router();
 
 
 const {
-  //   registerUser,
+    registerUser,
 
     loginUser,
 
@@ -63,7 +63,7 @@ router.post("/admin/user/new", upload.single("avatar"), newUser);
 
 // router.get("/me", isAuthenticatedUser, getUserProfile);
 
-// router.post("/register", upload.single("avatar"), registerUser);
+router.post("/register", registerUser);
 
 router.post("/login", loginUser);
 

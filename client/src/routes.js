@@ -16,7 +16,7 @@ import StoresList from './views/admin/stores';
 import AddStore from './views/admin/stores/addStore';
 import EditStore from './views/admin/stores/editStore';
 import LoginPage from './views/auth/loginPage';
-
+import RegisterPage from './views/auth/registerPage';
 
 export default function Router() {
   const routes = useRoutes([
@@ -40,6 +40,10 @@ export default function Router() {
     {
       path: 'login',
       element: <LoginPage />,
+    },
+    {
+      path: 'register',
+      element: <RegisterPage/>,
     },
     {
       element: <SimpleLayout />,

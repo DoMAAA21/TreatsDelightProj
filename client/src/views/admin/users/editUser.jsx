@@ -7,7 +7,7 @@ import * as Yup from 'yup';
 import Swal from 'sweetalert2';
 import { getUserDetails, userUpdated } from '../../../store/reducers/auth/userDetailsSlice';
 import { updateUser,clearErrors,updateUserReset } from '../../../store/reducers/auth/userSlice';
-import defaultAvatar from '../../assets/defaultavatar.png';
+import defaultAvatar from '../../../components/assets/defaultavatar.png';
 
 const validationSchema = Yup.object({
     fname: Yup.string().required('First Name is required'),

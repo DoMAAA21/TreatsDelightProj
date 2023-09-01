@@ -1,12 +1,12 @@
-import React, { Fragment, useState, useEffect } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { TextField, Button, Select, MenuItem, InputLabel, FormControl, Grid, Card, CardContent, Container } from '@mui/material';
-import { Formik, Form, Field } from 'formik';
+import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import Swal from 'sweetalert2';
 import { newUserReset, newUser } from '../../../store/reducers/auth/newUserSlice';
-import defaultAvatar from '../../assets/defaultavatar.png';
+import defaultAvatar from '../../../components/assets/defaultavatar.png';
 
 const validationSchema = Yup.object({
     fname: Yup.string().required('First Name is required'),

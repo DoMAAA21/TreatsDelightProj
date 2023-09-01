@@ -6,7 +6,7 @@ import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import Swal from 'sweetalert2';
 import { newStoreReset, newStore } from '../../../store/reducers/store/newStoreSlice';
-import defaultAvatar from '../../assets/defaultavatar.png';
+import defaultAvatar from '../../../components/assets/defaultavatar.png';
 
 const validationSchema = Yup.object({
     name: Yup.string().required('Name is required'),

@@ -7,7 +7,7 @@ import * as Yup from 'yup';
 import Swal from 'sweetalert2';
 import { getStoreDetails, storeUpdated } from '../../../store/reducers/store/storeDetailsSlice';
 import { updateStore,clearErrors,updateStoreReset } from '../../../store/reducers/store/storeSlice';
-import defaultAvatar from '../../assets/defaultavatar.png';
+import defaultAvatar from '../../../components/assets/defaultavatar.png';
 
 
 const validationSchema = Yup.object({
