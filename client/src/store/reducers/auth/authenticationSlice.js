@@ -5,6 +5,7 @@ const initialState = {
   user: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null,
   loading: false,
   isAuthenticated: localStorage.getItem('user'),
+  isEmployee: localStorage.getItem('isEmployee') ? JSON.parse(localStorage.getItem('isEmployee')) : null,
   error: null,
 };
 
@@ -19,9 +20,16 @@ export const login = createAsyncThunk('auth/login', async ({ email, password }, 
     };
 
     const { data } = await axios.post(`${process.env.REACT_APP_API}/api/v1/login`, { email, password }, config);
-    localStorage.setItem("user", JSON.stringify(data.user));
-    dispatch(loginSuccess(data.user))
-    return data.user;
+        localStorage.setItem("user", JSON.stringify(data.user));
+        
+        console.log(data.user.role)
+        if(data.user.role === 'employee'){
+          localStorage.setItem("isEmployee", JSON.stringify(data.user.role === 'employee'));
+
+        }
+
+        dispatch(loginSuccess(data.user))
+        return data.user;
   } catch (error) {
     dispatch(loginFail(error.response.data.message))
     return rejectWithValue(error.response.data.message);
@@ -33,6 +41,7 @@ export const logout = createAsyncThunk('auth/logout', async (_, { rejectWithValu
   try {
     const { data } = await axios.get(`${process.env.REACT_APP_API}/api/v1/logout`, { withCredentials: true });
     localStorage.removeItem("user");
+    localStorage.removeItem("isEmployee");
 
     return dispatch(logoutSuccess())
   } catch (error) {
@@ -83,6 +92,7 @@ const authSlice = createSlice({
       state.loading = false;
       state.isAuthenticated = false;
       state.user = null;
+      state.isEmployee = false;
       state.error = action.payload;
     },
     googleLoginRequest(state) {
@@ -135,7 +145,7 @@ const authSlice = createSlice({
     },
     logoutSuccess(state) {
       state.loading = false;
-      state.isAuthenticated = false;
+      state.isEmployee = false;
       state.user = null;
     },
     logoutFail(state, action) {

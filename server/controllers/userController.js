@@ -2,14 +2,10 @@
 
 
 const User = require("../models/User");
-
 const ErrorHandler = require("../utils/errorHandler");
-
 const sendToken = require("../utils/jwtToken");
-
-
+const bcrypt = require("bcryptjs");
 // const sendEmail = require("../utils/sendEmail");
-
 const cloudinary = require("cloudinary");
 
 
@@ -25,55 +21,6 @@ exports.allUsers = async (req, res, next) => {
 };
 
 
-
-//   console.log(req.body)
-//   const result = await cloudinary.v2.uploader.upload(
-//     req.body.avatar,
-//      {
-//        folder: "avatars",
-
-//        width: 150,
-
-//        crop: "scale",
-//      },
-//      (err, res) => {
-//        console.log(err, res);
-//      }
-//    );
-//    const {
-//     fname,
-//     lname,
-//     course,
-//     religion,
-//     role,
-//     email,
-//     password,
-//   } = req.body;
-
-//   const user = await User.create({
-//     fname,
-//     lname,
-//     course,
-//     religion,
-//     role,
-//     email,
-//     password,
-
-//     avatar: {
-//       public_id: result.public_id,
-
-//       url: result.secure_url,
-//     },
-//   });
-
-
-
-//   res.status(201).json({
-//     success: true,
-
-//     user,
-//   });
-// };
 
 
 exports.newUser = async (req, res, next) => {
@@ -174,6 +121,11 @@ exports.updateUser = async (req, res, next) => {
     email: req.body.email,
     role: req.body.role,
   };
+  if (req.body.password) {
+    // Hash the new password before updating
+    const hashedPassword = await bcrypt.hash(req.body.password, 10); // You can adjust the salt rounds as needed
+    newUserData.password = hashedPassword;
+  }
 
   if (req.body.avatar !== '') {
     const user = await User.findById(req.params.id);
@@ -204,6 +156,8 @@ exports.updateUser = async (req, res, next) => {
 
     useFindAndModify: false
   });
+
+  console.log(user)
 
   res.status(200).json({
     success: true,

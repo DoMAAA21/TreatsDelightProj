@@ -8,6 +8,8 @@ import newStoreReducer from './store/newStoreSlice';
 import storeReducer from './store/storeSlice';
 import storeDetailsReducer from './store/storeDetailsSlice';
 import authenticationReducer from './auth/authenticationSlice';
+import storeDashboardSlice from './storeDashboard/storeDashboardSlice';
+
 
 const rootReducer = combineReducers({
   allUsers: allUsersReducer,

@@ -52,15 +52,20 @@ export default function LoginForm() {
   const location = useLocation();
   const redirect = location.search ? new URLSearchParams(location.search).get('redirect') : '' 
 
-  const { isAuthenticated, error, loading } = useSelector(
+  const { isAuthenticated, error, loading , isEmployee } = useSelector(
     (state) => state.auth
   );
 
   useEffect(() => {
     if(isAuthenticated) navigate("/");
-    if (isAuthenticated && redirect === "shipping") {
-      successMsg('Logged In');
-      navigate(`/${redirect}`, { replace: true });
+    // if (isAuthenticated && redirect === "shipping") {
+    //   successMsg('Logged In');
+    //   navigate(`/${redirect}`, { replace: true });
+    // } 
+
+    if (isAuthenticated && isEmployee) {
+        successMsg('Logged In');
+        navigate('dashboard/store');
     } 
     
 

@@ -74,13 +74,20 @@ const userSchema = new mongoose.Schema({
 
   googleId: {
     type: String,
-    required:false,
+    required: false,
   },
+  store: {
+    storeId: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: false,
+      ref: 'Store'
+    },
 
-  secret: {
-    type: String,
+    name: {
+      type: String,
 
-    required:false,
+      required: false,
+    }
   },
 
   createdAt: {
@@ -101,6 +108,13 @@ userSchema.pre("save", async function (next) {
     next();
   }
 
+  this.password = await bcrypt.hash(this.password, 10);
+});
+
+userSchema.pre('updateOne', async function (next) {
+  if (!this.isModified("password")) {
+    next();
+  }
   this.password = await bcrypt.hash(this.password, 10);
 });
 

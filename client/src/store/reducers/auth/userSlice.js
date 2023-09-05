@@ -23,6 +23,8 @@ export const deleteUser = createAsyncThunk('user/deleteUser',async (id,{dispatch
 
 export const updateUser = createAsyncThunk('user/updateUser',async ({id,userData},{dispatch,rejectWithValue}) => {
 
+  console.log(userData)
+
 
     try {
         const config = {

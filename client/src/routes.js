@@ -17,6 +17,7 @@ import AddStore from './views/admin/stores/addStore';
 import EditStore from './views/admin/stores/editStore';
 import LoginPage from './views/auth/loginPage';
 import RegisterPage from './views/auth/registerPage';
+import StoreDashboard from './views/storeDashboard';
 
 export default function Router() {
   const routes = useRoutes([
@@ -35,6 +36,14 @@ export default function Router() {
         { path: 'stores', element: <StoresList/> },
         { path: 'add-store', element: <AddStore/> },
         { path: 'edit-store/:id', element: <EditStore/> },
+      ],
+    },
+    {
+      path: '/dashboard/store',
+      element: <DashboardLayout />,
+      children: [
+        { element: <Navigate to="/dashboard/store/home" />, index: true },
+        { path: 'home', element: <StoreDashboard/> },
       ],
     },
     {
