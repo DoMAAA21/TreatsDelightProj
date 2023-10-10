@@ -86,6 +86,7 @@ const AddUser = () => {
 
 
     const onSubmit = (data) => {
+        console.log(avatar)
         const userData = {
             fname: data.fname,
             lname: data.lname,
@@ -215,8 +216,8 @@ const AddUser = () => {
                                             <MenuItem value="">
                                                 <em>None</em>
                                             </MenuItem>
-                                            <MenuItem value="employee">Employee</MenuItem>
-                                            <MenuItem value="user">User</MenuItem>
+                                            <MenuItem value="Employee">Employee</MenuItem>
+                                            <MenuItem value="User">User</MenuItem>
                                         </Select>
                                         {formik.touched.role && formik.errors.role && <div>{formik.errors.role}</div>}
                                     </FormControl>
@@ -258,6 +259,8 @@ const AddUser = () => {
                                     </FormControl>
 
                                     <Button
+                                        id="submitButton"
+                                        name="submitButton"
                                         type="submit"
                                         variant="contained"
                                         color="primary"

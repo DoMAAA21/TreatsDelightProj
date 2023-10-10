@@ -19,10 +19,7 @@ exports.newStore = async (req, res, next) => {
   const { name, slogan, stall, location, active, logo } = req.body;
 
   try {
-    // Convert 'true' and 'false' strings to actual boolean values
-    const isActive = active === 'true';
-
-    // If the email is unique, proceed with user creation
+   
     const result = await cloudinary.v2.uploader.upload(logo, {
       folder: 'stores',
       width: 150,
@@ -34,7 +31,7 @@ exports.newStore = async (req, res, next) => {
       slogan,
       stall,
       location,
-      active: isActive,
+      active: active,
       logo: {
         public_id: result.public_id,
         url: result.secure_url,

@@ -82,6 +82,7 @@ const AddStore = () => {
 
 
     const onSubmit = (data) => {
+        console.log(data.active)
         const storeData = {
             name: data.name,
             slogan: data.slogan,

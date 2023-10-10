@@ -47,7 +47,6 @@ const errorMsg = (message = '') =>
 const EditUser = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-
     const { user } = useSelector(state => state.userDetails)
     const { error, isUpdated } = useSelector(state => state.user);
     const { id } = useParams();
@@ -124,18 +123,21 @@ const EditUser = () => {
     };
 
     const onChange = (e) => {
-        const reader = new FileReader();
+        if (e.target.name === "avatar") {
+            const reader = new FileReader();
 
-        reader.onload = () => {
-            if (reader.readyState === 2) {
-                setAvatarPreview(reader.result);
+            reader.onload = () => {
+                if (reader.readyState === 2) {
+                    setAvatarPreview(reader.result);
+                    setAvatar(reader.result);
+                }
+            };
 
-                setAvatar(reader.result);
-            }
-        };
-
-        reader.readAsDataURL(e.target.files[0]);
+            reader.readAsDataURL(e.target.files[0]);
+        }
     };
+    
+    
 
 
 
@@ -242,8 +244,8 @@ const EditUser = () => {
                                             <MenuItem value="">
                                                 <em>None</em>
                                             </MenuItem>
-                                            <MenuItem value="employee">Employee</MenuItem>
-                                            <MenuItem value="user">User</MenuItem>
+                                            <MenuItem value="Employee">Employee</MenuItem>
+                                            <MenuItem value="User">User</MenuItem>
                                         </Select>
                                         {formik.touched.role && formik.errors.role && <div>{formik.errors.role}</div>}
                                     </FormControl>

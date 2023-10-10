@@ -25,7 +25,6 @@ exports.allUsers = async (req, res, next) => {
 
 exports.newUser = async (req, res, next) => {
   const { fname, lname, course, religion, role, email, password, avatar } = req.body;
-
   try {
     // Check if the email already exists in the database
     const existingUser = await User.findOne({ email });
@@ -37,7 +36,13 @@ exports.newUser = async (req, res, next) => {
       });
     }
 
-    // If the email is unique, proceed with user creation
+    if (req.body.avatar == '') {
+      return res.status(400).json({
+        success: false,
+        message: 'Please Provide Avatar',
+      });
+    }
+
     const result = await cloudinary.v2.uploader.upload(avatar, {
       folder: 'avatars',
       width: 150,
@@ -63,6 +68,7 @@ exports.newUser = async (req, res, next) => {
       user,
     });
   } catch (error) {
+    console.log(error)
     res.status(500).json({
       success: false,
       message: 'An error occurred while creating the user.',
@@ -157,7 +163,7 @@ exports.updateUser = async (req, res, next) => {
     useFindAndModify: false
   });
 
-  console.log(user)
+  // console.log(user)
 
   res.status(200).json({
     success: true,
