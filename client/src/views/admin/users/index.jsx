@@ -135,6 +135,7 @@ const UsersList = () => {
         {
           label: 'Actions',
           field: 'actions',
+
         },
 
       ],

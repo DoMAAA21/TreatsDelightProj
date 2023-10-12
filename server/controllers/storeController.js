@@ -22,8 +22,6 @@ exports.newStore = async (req, res, next) => {
    
     const result = await cloudinary.v2.uploader.upload(logo, {
       folder: 'stores',
-      width: 150,
-      crop: 'scale',
     });
 
     const store = await Store.create({
@@ -94,40 +92,36 @@ exports.getStoreDetails = async (req, res, next) => {
   });
 };
 
-exports.updateUser = async (req, res, next) => {
-  const newUserData = {
-    fname: req.body.fname,
-    lname: req.body.lname,
-    password: req.body.password,
-    course: req.body.course,
-    religion: req.body.religion,
-    email: req.body.email,
-    role: req.body.role,
+exports.updateStore = async (req, res, next) => {
+  const newStoreData = {
+    name: req.body.name,
+    slogan: req.body.slogan,
+    stall: req.body.stall,
+    location: req.body.location,
+    active: req.body.active,
   };
 
-  if (req.body.avatar !== '') {
-    const user = await User.findById(req.params.id);
-    const image_id = user.avatar.public_id;
+  if (req.body.logo !== '') {
+    const store = await Store.findById(req.params.id);
+    const image_id = store.logo.public_id;
     const res = await cloudinary.uploader.destroy(image_id);
     const result = await cloudinary.v2.uploader.upload(
-      req.body.avatar,
+      req.body.logo,
       {
-        folder: "avatars",
-        width: 150,
-        crop: "scale",
+        folder: "stores",
       },
       (err, res) => {
         console.log(err, res);
       }
     );
-    newUserData.avatar = {
+    newStoreData.logo = {
       public_id: result.public_id,
       url: result.secure_url,
     };
   }
 
 
-  const user = await User.findByIdAndUpdate(req.params.id, newUserData, {
+  const store = await Store.findByIdAndUpdate(req.params.id, newStoreData, {
     new: true,
 
     runValidators: true,
@@ -137,7 +131,7 @@ exports.updateUser = async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    user
+    store
   });
 };
 

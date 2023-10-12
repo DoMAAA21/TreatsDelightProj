@@ -100,20 +100,36 @@ const AddUser = () => {
         dispatch(newUser(userData));
     };
 
-    const onChange = (e) => {
-        if (e.target.name === "avatar") {
-            const reader = new FileReader();
+    // const onChange = (e) => {
+    //     if (e.target.name === "avatar") {
+    //         const reader = new FileReader();
 
-            reader.onload = () => {
-                if (reader.readyState === 2) {
-                    setAvatarPreview(reader.result);
-                    setAvatar(reader.result);
-                }
-            };
+    //         reader.onload = () => {
+    //             if (reader.readyState === 2) {
+    //                 setAvatarPreview(reader.result);
+    //                 setAvatar(reader.result);
+    //             }
+    //         };
 
-            reader.readAsDataURL(e.target.files[0]);
+    //         reader.readAsDataURL(e.target.files[0]);
+    //     }
+    // };
+
+    const handleImage = (e) =>{
+        const file = e.target.files[0];
+        setFileToBase(file);
+        console.log(file);
+    }
+
+    const setFileToBase = (file) =>{
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onloadend = () =>{
+            setAvatarPreview(reader.result);
+            setAvatar(reader.result);
         }
-    };
+
+    }
 
     return (
         <Grid >
@@ -242,7 +258,7 @@ const AddUser = () => {
                                                     className="custom-file-input"
                                                     id="avatar"
                                                     accept="image/*"
-                                                    onChange={onChange}
+                                                    onChange={handleImage}
                                                     required
                                                     style={{ display: 'none' }} // Hide the default file input
                                                 />
@@ -257,6 +273,12 @@ const AddUser = () => {
                                             </Button>
                                         </div>
                                     </FormControl>
+
+{/* <div className="form-outline mb-4">
+                <input onChange={handleImage}  type="file" id="formupload" name="image" className="form-control"  />
+                <label className="form-label" htmlFor="form4Example2">Image</label>
+            </div>
+            <img className="img-fluid" src={avatarPreview} alt="" /> */}
 
                                     <Button
                                         id="submitButton"

@@ -25,6 +25,8 @@ exports.allUsers = async (req, res, next) => {
 
 exports.newUser = async (req, res, next) => {
   const { fname, lname, course, religion, role, email, password, avatar } = req.body;
+  console.log(req.body)
+  // console.log(avatar)
   try {
     // Check if the email already exists in the database
     const existingUser = await User.findOne({ email });
@@ -45,8 +47,8 @@ exports.newUser = async (req, res, next) => {
 
     const result = await cloudinary.v2.uploader.upload(avatar, {
       folder: 'avatars',
-      width: 150,
-      crop: 'scale',
+      // width: 150,
+      // crop: 'scale',
     });
 
     const user = await User.create({
@@ -141,8 +143,6 @@ exports.updateUser = async (req, res, next) => {
       req.body.avatar,
       {
         folder: "avatars",
-        width: 150,
-        crop: "scale",
       },
       (err, res) => {
         console.log(err, res);
