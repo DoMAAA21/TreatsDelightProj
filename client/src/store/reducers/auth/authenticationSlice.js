@@ -4,9 +4,10 @@ import axios from 'axios';
 const initialState = {
   user: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null,
   loading: false,
-  isAuthenticated: localStorage.getItem('user'),
-  isEmployee: localStorage.getItem('isEmployee') ? JSON.parse(localStorage.getItem('isEmployee')) : null,
   error: null,
+  isAuthenticated: localStorage.getItem('user'),
+  role: localStorage.getItem('role'),
+
 };
 
 export const login = createAsyncThunk('auth/login', async ({ email, password }, { rejectWithValue, dispatch }) => {
@@ -20,16 +21,13 @@ export const login = createAsyncThunk('auth/login', async ({ email, password }, 
     };
 
     const { data } = await axios.post(`${process.env.REACT_APP_API}/api/v1/login`, { email, password }, config);
-        localStorage.setItem("user", JSON.stringify(data.user));
-        
-        console.log(data.user.role)
-        if(data.user.role === 'employee'){
-          localStorage.setItem("isEmployee", JSON.stringify(data.user.role === 'employee'));
+    localStorage.setItem('user', JSON.stringify(data.user));
+    localStorage.setItem('role', data.user.role);
 
-        }
 
-        dispatch(loginSuccess(data.user))
-        return data.user;
+
+    dispatch(loginSuccess(data.user))
+    return data.user;
   } catch (error) {
     dispatch(loginFail(error.response.data.message))
     return rejectWithValue(error.response.data.message);
@@ -40,12 +38,13 @@ export const login = createAsyncThunk('auth/login', async ({ email, password }, 
 export const logout = createAsyncThunk('auth/logout', async (_, { rejectWithValue, dispatch }) => {
   try {
     const { data } = await axios.get(`${process.env.REACT_APP_API}/api/v1/logout`, { withCredentials: true });
-    localStorage.removeItem("user");
-    localStorage.removeItem("isEmployee");
+    localStorage.removeItem('user');
+    localStorage.removeItem('role');
 
-    return dispatch(logoutSuccess())
+
+    return dispatch(logoutSuccess(data.success))
   } catch (error) {
-    dispatch(loginFail(error.response.data.message))
+    dispatch(logoutFail(error.response.data.message))
     return rejectWithValue(error.response.data.message);
   }
 });
@@ -60,7 +59,7 @@ export const registerUser = createAsyncThunk('auth/register', async (userData, {
       },
       withCredentials: true,
     };
-    const response = await axios.post(`${process.env.REACT_APP_API}/api/v1/register`, userData,{withCredentials:true}, config);
+    const response = await axios.post(`${process.env.REACT_APP_API}/api/v1/register`, userData, { withCredentials: true }, config);
     const data = response.data;
     localStorage.setItem('user', JSON.stringify(data.user));
     dispatch(registerUserSuccess(data.user))
@@ -144,6 +143,7 @@ const authSlice = createSlice({
       state.error = null;
     },
     logoutSuccess(state) {
+      state.isAuthenticated = false;
       state.loading = false;
       state.isEmployee = false;
       state.user = null;

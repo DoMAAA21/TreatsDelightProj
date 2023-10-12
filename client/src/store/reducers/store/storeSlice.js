@@ -23,8 +23,8 @@ export const deleteStore = createAsyncThunk('store/deleteStore',async (id,{dispa
 
 export const updateStore = createAsyncThunk('store/updateStore',async ({id,storeData},{dispatch,rejectWithValue}) => {
 
-
     try {
+      dispatch(updateStoreRequest());
         const config = {
             headers: {
               'Content-Type': 'application/json',
@@ -35,6 +35,7 @@ export const updateStore = createAsyncThunk('store/updateStore',async ({id,store
       return data.success;
 
     } catch (error) {
+      dispatch(updateStoreFail(error.response.data.message))
       return rejectWithValue(error.response.data.message);
     }
   }

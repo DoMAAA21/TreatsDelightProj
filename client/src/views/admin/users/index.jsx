@@ -230,6 +230,8 @@ const UsersList = () => {
             className="table table-striped"
             striped
             hover
+            autoWidth
+           
           />
         </div>
       )}

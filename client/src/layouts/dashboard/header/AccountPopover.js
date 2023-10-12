@@ -95,7 +95,7 @@ export default function AccountPopover() {
         }}
       >
         {user ? (
-          <Avatar src={user.avatar && user.avatar.url} alt="photoURL" />
+          <Avatar src={user?.avatar?.url} alt="photoURL" />
         ) : (
           (
             <Avatar src={account.photoURL} alt="photoURL" />

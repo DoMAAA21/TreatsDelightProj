@@ -48,14 +48,12 @@ const EditStore = () => {
     const navigate = useNavigate();
     const { id } = useParams();
     const { store } = useSelector(state => state.storeDetails)
-    const { error, isUpdated,loading } = useSelector(state => state.store);
+    const { error, isUpdated, loading } = useSelector(state => state.store);
     const [logo, setLogo] = useState("");
 
     const [logoPreview, setLogoPreview] = useState(
         defaultAvatar
     );
-
-    console.log(store)
 
     const initialValues =  store ? {
         name: store.name || '',

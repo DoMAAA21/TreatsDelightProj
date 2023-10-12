@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { Grid, Container, Typography, Card, CardContent, Box, Switch } from '@mui/material';
 import Swal from 'sweetalert2';
@@ -9,6 +10,7 @@ import {
   AppWidgetSummary,
 
 } from '../../sections/@dashboard/app';
+
 
 // ----------------------------------------------------------------------
 
@@ -59,8 +61,10 @@ export default function StoreDashboard() {
         
 
         <Grid container spacing={3}>
-          <Grid item xs={12} sm={6} md={3}>
+          <Grid item xs={12} sm={6} md={3} >
+            <Link to="/dashboard/users">
             <AppWidgetSummary title="Manage Menu"  icon={'fluent-mdl2:task-manager'} />
+            </Link>
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>

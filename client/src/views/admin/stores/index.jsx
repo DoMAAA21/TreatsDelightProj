@@ -44,9 +44,6 @@ const StoresList = () => {
   useEffect(() => {
     dispatch(fetchAllStores());
 
-    // if(error){
-
-    // }
 
     if (isDeleted) {
       console.log('deleted')

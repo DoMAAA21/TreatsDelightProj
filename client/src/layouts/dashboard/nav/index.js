@@ -41,12 +41,15 @@ export default function Nav({ openNav, onCloseNav }) {
   const isDesktop = useResponsive('up', 'lg');
   const { user, loading } = useSelector((state) => state.auth);
 
+
   useEffect(() => {
     if (openNav) {
       onCloseNav();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
+
+  
 
   const renderContent = (
     <Scrollbar
@@ -62,7 +65,7 @@ export default function Nav({ openNav, onCloseNav }) {
         <Box sx={{ mb: 5, mx: 2.5 }}>
           <Link underline="none">
             <StyledAccount>
-              <Avatar src={user.avatar.url} alt="photoURL" />
+              <Avatar src={user?.avatar?.url} alt="photoURL" />
 
               <Box sx={{ ml: 2 }}>
                 <Typography variant="subtitle2" sx={{ color: 'text.primary' }}>

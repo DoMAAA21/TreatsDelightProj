@@ -25,8 +25,7 @@ exports.allUsers = async (req, res, next) => {
 
 exports.newUser = async (req, res, next) => {
   const { fname, lname, course, religion, role, email, password, avatar } = req.body;
-  console.log(req.body)
-  // console.log(avatar)
+
   try {
     // Check if the email already exists in the database
     const existingUser = await User.findOne({ email });
@@ -120,6 +119,7 @@ exports.getUserDetails = async (req, res, next) => {
 };
 
 exports.updateUser = async (req, res, next) => {
+  const { email } = req.body;
   const newUserData = {
     fname: req.body.fname,
     lname: req.body.lname,
@@ -129,6 +129,15 @@ exports.updateUser = async (req, res, next) => {
     email: req.body.email,
     role: req.body.role,
   };
+  const existingUser = await User.findOne({ email });
+
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email is already registered.',
+      });
+    }
+
   if (req.body.password) {
     // Hash the new password before updating
     const hashedPassword = await bcrypt.hash(req.body.password, 10); // You can adjust the salt rounds as needed
