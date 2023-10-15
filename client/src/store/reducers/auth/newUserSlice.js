@@ -26,6 +26,7 @@ export const newUser = createAsyncThunk('newUser/newUser', async (userData, { re
     }
   });
 
+
 const newUserSlice = createSlice({
   name: 'newUser',
   initialState,

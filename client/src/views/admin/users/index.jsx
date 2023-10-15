@@ -42,7 +42,6 @@ const UsersList = () => {
   const { isDeleted } = useSelector(state => state.user)
 
   useEffect(() => {
-    // Dispatch the async action to fetch users when the component mounts
     dispatch(fetchAllUsers());
 
     if (isDeleted) {
@@ -100,13 +99,13 @@ const UsersList = () => {
         },
 
         {
-          label: 'Surname',
-          field: 'lname',
+          label: 'Full Name',
+          field: 'fullName',
           sort: 'asc',
         },
         {
-          label: 'First Name',
-          field: 'fname',
+          label: 'Email',
+          field: 'email',
           sort: 'asc',
         },
         {
@@ -119,13 +118,6 @@ const UsersList = () => {
           field: 'religion',
           sort: 'asc',
         },
-
-        {
-          label: 'Email',
-          field: 'email',
-          sort: 'asc',
-        },
-
         {
           label: 'Role',
           field: 'role',
@@ -148,11 +140,11 @@ const UsersList = () => {
 
       data.rows.push({
         id: user._id,
-        fname: user.fname,
-        lname: user.lname,
+        fullName: `${user.fname} ${user.lname}`,
+        email: user.email,
         course: user.course,
         religion: user.religion,
-        email: user.email,
+       
         role: user.role,
 
         actions: <>
@@ -230,7 +222,6 @@ const UsersList = () => {
             className="table table-striped"
             striped
             hover
-            autoWidth
            
           />
         </div>

@@ -17,7 +17,7 @@ import AddStore from './views/admin/stores/addStore';
 import EditStore from './views/admin/stores/editStore';
 import LoginPage from './views/auth/loginPage';
 import RegisterPage from './views/auth/registerPage';
-import StoreDashboard from './views/storeDashboard';
+import StoreDashboard from './views/dashboard';
 
 export default function Router() {
   const routes = useRoutes([

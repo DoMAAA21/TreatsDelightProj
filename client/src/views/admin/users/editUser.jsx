@@ -5,8 +5,9 @@ import { TextField, Button, Select, MenuItem, InputLabel, FormControl, Grid, Car
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import Swal from 'sweetalert2';
+import axios from 'axios';
 import { getUserDetails, userUpdated } from '../../../store/reducers/auth/userDetailsSlice';
-import { updateUser,clearErrors,updateUserReset } from '../../../store/reducers/auth/userSlice';
+import { updateUser, clearErrors, updateUserReset } from '../../../store/reducers/auth/userSlice';
 import defaultAvatar from '../../../components/assets/defaultavatar.png';
 
 const validationSchema = Yup.object({
@@ -48,15 +49,40 @@ const EditUser = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { user } = useSelector(state => state.userDetails)
-    const { error, isUpdated } = useSelector(state => state.user);
+    const { error, isUpdated, loading } = useSelector(state => state.user);
     const { id } = useParams();
     const [avatar, setAvatar] = useState("");
-    const [avatarPreview, setAvatarPreview] = useState(
-        defaultAvatar
-    );
+    const [avatarPreview, setAvatarPreview] = useState(defaultAvatar);
+    const [selectedRole, setSelectedRole] = useState('');
+    const [storeDropdown, setStoreDropdown] = useState([]);
+    const [loadingOptions, setLoadingOptions] = useState(false);
 
+
+    const fetchStores = async () => {
+        try {
+            const response = await axios.get(`${process.env.REACT_APP_API}/api/v1/admin/stores`);
+            console.log(response.data.stores);
+            const storeData = response.data.stores;
+            const options = storeData.map((store) => ({
+                value: store._id,
+                label: store.name,
+            }));
+            setStoreDropdown(options);
+            setLoadingOptions(true);
+            setSelectedRole(user.role);
+   
+        } catch (error) {
+            console.error('Error fetching store data:', error);
+            setLoadingOptions(false);
+        }
+    };
+    
+
+    
 
     useEffect(() => {
+
+        fetchStores();
 
 
         if (user && user._id !== id) {
@@ -92,7 +118,7 @@ const EditUser = () => {
             role: user.role || '',
             course: user.course || '',
             religion: user.religion || '',
-
+            store: user.store ? `${user.store.storeId}-${user.store.name}` : '',
         }
         : {
             fname: '',
@@ -102,13 +128,12 @@ const EditUser = () => {
             role: '',
             course: '',
             religion: '',
+            store: ''
         };
 
 
 
     const onSubmit = (data) => {
-
-        // console.log(id)
         const userData = {
             fname: data.fname,
             lname: data.lname,
@@ -119,6 +144,15 @@ const EditUser = () => {
             role: data.role,
             avatar
         }
+        if (data.role === "Employee" && data.store) {
+            const selectedStoreValue = data.store.split('-');
+            const storeId = selectedStoreValue[0];
+            const storeName = selectedStoreValue[1];
+            userData.storeId = storeId;
+            userData.storeName = storeName;
+           
+        }
+
         dispatch(updateUser({ id: user._id, userData }));
     };
 
@@ -136,8 +170,8 @@ const EditUser = () => {
             reader.readAsDataURL(e.target.files[0]);
         }
     };
-    
-    
+
+
 
 
 
@@ -211,6 +245,9 @@ const EditUser = () => {
                                             <MenuItem value="">
                                                 <em>None</em>
                                             </MenuItem>
+                                            <MenuItem value="Staff">
+                                                <em>Staff</em>
+                                            </MenuItem>
                                             <MenuItem value="BSIT">Bachelor of Science in Information Technology</MenuItem>
                                             <MenuItem value="CE">Bachelor of Science in Civil Engineering</MenuItem>
                                         </Select>
@@ -240,6 +277,10 @@ const EditUser = () => {
                                             label="Role"
                                             name="role"
                                             {...formik.getFieldProps('role')}
+                                            onChange={(e) => {
+                                                setSelectedRole(e.target.value);
+                                                formik.handleChange(e);
+                                            }}
                                         >
                                             <MenuItem value="">
                                                 <em>None</em>
@@ -249,6 +290,33 @@ const EditUser = () => {
                                         </Select>
                                         {formik.touched.role && formik.errors.role && <div>{formik.errors.role}</div>}
                                     </FormControl>
+
+                                    {selectedRole === 'Employee' && loadingOptions  ? (
+                                        <FormControl
+                                            fullWidth
+                                            variant="outlined"
+                                            margin="normal"
+                                        >
+                                            <InputLabel htmlFor="store">Store</InputLabel>
+                                            <Select
+                                                label="Store"
+                                                name="store"
+                                                required={selectedRole === 'Employee'}
+                                                {...formik.getFieldProps('store')}
+                                
+                                            >
+
+                                                <MenuItem value="">
+                                                    <em>None</em>
+                                                </MenuItem>
+                                                {storeDropdown.map((option) => (
+                                                    <MenuItem key={option.value} value={`${option.value}-${option.label}`}>
+                                                        {option.label}
+                                                    </MenuItem>
+                                                ))}
+                                            </Select>
+                                        </FormControl>
+                                    ) : null}
 
 
 
@@ -291,7 +359,7 @@ const EditUser = () => {
                                         type="submit"
                                         variant="contained"
                                         color="primary"
-                                        disabled={!formik.isValid}
+                                        disabled={!formik.isValid || loading}
                                         style={{ marginTop: '20px', width: '100%', display: 'block', margin: '0 auto' }}
                                     >
                                         Submit

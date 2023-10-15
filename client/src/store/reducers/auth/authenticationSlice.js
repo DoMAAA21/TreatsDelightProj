@@ -7,7 +7,6 @@ const initialState = {
   error: null,
   isAuthenticated: localStorage.getItem('user'),
   role: localStorage.getItem('role'),
-
 };
 
 export const login = createAsyncThunk('auth/login', async ({ email, password }, { rejectWithValue, dispatch }) => {

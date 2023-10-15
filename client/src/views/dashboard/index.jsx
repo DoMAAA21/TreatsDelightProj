@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
+import {  useSelector } from "react-redux";
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { Grid, Container, Typography, Card, CardContent, Box, Switch } from '@mui/material';
+import { Grid, Container, Typography, Card, CardContent, Switch } from '@mui/material';
 import Swal from 'sweetalert2';
 // components
 
@@ -15,14 +16,16 @@ import {
 // ----------------------------------------------------------------------
 
 export default function StoreDashboard() {
- 
+    const { isAuthenticated, error, loading , isEmployee , user } = useSelector((state) => state.auth);
+    console.log(user)
     const [isSwitchOn, setIsSwitchOn] = useState(false);
     const handleSwitchChange = (event) => {
     const newState = event.target.checked;
     setIsSwitchOn(newState);
 
+    
+
     const message = newState ? 'open' : 'close';
-    const color = newState ? 'green' : 'grey';
 
     Swal.fire({
       title: `Store ${message.toUpperCase()}`,
@@ -41,8 +44,8 @@ export default function StoreDashboard() {
         <title> Dashboard  </title>
       </Helmet>
 
-      <Container maxWidth="xl">
-   
+      
+   {user.role === "Employee" ?(<Container maxWidth="xl">
       <Grid container spacing={2} justifyContent="center">
         <Grid item xs={12}>
           <Card style={{ backgroundColor: isSwitchOn ? '#86CD82' : 'grey' }}>
@@ -87,7 +90,10 @@ export default function StoreDashboard() {
          
 
         </Grid>
-      </Container>
+      </Container>) :
+      null
+      }
+   
     </>
   );
 }

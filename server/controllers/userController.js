@@ -24,10 +24,9 @@ exports.allUsers = async (req, res, next) => {
 
 
 exports.newUser = async (req, res, next) => {
-  const { fname, lname, course, religion, role, email, password, avatar } = req.body;
+  const { fname, lname, course, religion, role, email, password, avatar, storeId, storeName } = req.body;
 
   try {
-    // Check if the email already exists in the database
     const existingUser = await User.findOne({ email });
 
     if (existingUser) {
@@ -37,7 +36,7 @@ exports.newUser = async (req, res, next) => {
       });
     }
 
-    if (req.body.avatar == '') {
+    if (avatar === '') {
       return res.status(400).json({
         success: false,
         message: 'Please Provide Avatar',
@@ -46,11 +45,9 @@ exports.newUser = async (req, res, next) => {
 
     const result = await cloudinary.v2.uploader.upload(avatar, {
       folder: 'avatars',
-      // width: 150,
-      // crop: 'scale',
     });
 
-    const user = await User.create({
+    const userData = {
       fname,
       lname,
       course,
@@ -62,20 +59,29 @@ exports.newUser = async (req, res, next) => {
         public_id: result.public_id,
         url: result.secure_url,
       },
-    });
+    };
+    if (role === 'Employee' && storeId && storeName) {
+      userData.store =  {
+        storeId: storeId,
+        name: storeName,
+      }
+    }
+
+    const user = await User.create(userData);
 
     res.status(201).json({
       success: true,
       user,
     });
   } catch (error) {
-    console.log(error)
+    console.log(error);
     res.status(500).json({
       success: false,
       message: 'An error occurred while creating the user.',
     });
   }
 };
+
 
 
 exports.deleteUser = async (req, res, next) => {
@@ -119,66 +125,84 @@ exports.getUserDetails = async (req, res, next) => {
 };
 
 exports.updateUser = async (req, res, next) => {
-  const { email } = req.body;
-  const newUserData = {
-    fname: req.body.fname,
-    lname: req.body.lname,
-    password: req.body.password,
-    course: req.body.course,
-    religion: req.body.religion,
-    email: req.body.email,
-    role: req.body.role,
-  };
-  const existingUser = await User.findOne({ email });
+  const { fname, lname, course, religion, role, email, password, avatar, storeId, storeName } = req.body;
 
-    if (existingUser) {
-      return res.status(400).json({
+  try {
+    const user = await User.findById(req.params.id);
+    
+    if (!user) {
+      return res.status(404).json({
         success: false,
-        message: 'Email is already registered.',
+        message: 'User not found.',
       });
     }
 
-  if (req.body.password) {
-    // Hash the new password before updating
-    const hashedPassword = await bcrypt.hash(req.body.password, 10); // You can adjust the salt rounds as needed
-    newUserData.password = hashedPassword;
-  }
+    if (email !== user.email) {
+      // Check if the email already exists in the database
+      const existingUser = await User.findOne({ email });
 
-  if (req.body.avatar !== '') {
-    const user = await User.findById(req.params.id);
-    const image_id = user.avatar.public_id;
-    const res = await cloudinary.uploader.destroy(image_id);
-    const result = await cloudinary.v2.uploader.upload(
-      req.body.avatar,
-      {
-        folder: "avatars",
-      },
-      (err, res) => {
-        console.log(err, res);
+      if (existingUser) {
+        return res.status(400).json({
+          success: false,
+          message: 'Email is already registered.',
+        });
       }
-    );
-    newUserData.avatar = {
-      public_id: result.public_id,
-      url: result.secure_url,
+    }
+
+    const newUserData = {
+      fname,
+      lname,
+      course,
+      religion,
+      role,
+      email,
+      store: (role === 'Employee' && storeId && storeName) ? { storeId, name: storeName } : null
     };
+
+    if (password) {
+      // Hash the new password before updating
+      const hashedPassword = await bcrypt.hash(password, 10); // You can adjust the salt rounds as needed
+      newUserData.password = hashedPassword;
+    }
+
+   
+
+    if (avatar !== '') {
+      // Delete the previous avatar
+      const image_id = user.avatar.public_id;
+      const deleteResult = await cloudinary.uploader.destroy(image_id);
+
+      // Upload the new avatar
+      const result = await cloudinary.uploader.upload(avatar, {
+        folder: "avatars",
+      });
+
+      newUserData.avatar = {
+        public_id: result.public_id,
+        url: result.secure_url,
+      };
+    }
+
+    // Update the user's data
+    const updatedUser = await User.findByIdAndUpdate(req.params.id, newUserData, {
+      new: true,
+      runValidators: true,
+      useFindAndModify: false,
+    });
+
+    res.status(200).json({
+      success: true,
+      user: updatedUser,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: 'An error occurred while updating the user.',
+    });
   }
-
-
-  const user = await User.findByIdAndUpdate(req.params.id, newUserData, {
-    new: true,
-
-    runValidators: true,
-
-    useFindAndModify: false
-  });
-
-  // console.log(user)
-
-  res.status(200).json({
-    success: true,
-    user
-  });
 };
+
 
 exports.loginUser = async (req, res, next) => {
   const { email, password } = req.body;

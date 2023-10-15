@@ -22,9 +22,9 @@ export const deleteUser = createAsyncThunk('user/deleteUser',async (id,{dispatch
 );
 
 export const updateUser = createAsyncThunk('user/updateUser',async ({id,userData},{dispatch,rejectWithValue}) => {
-
+  console.log(userData)
     try {
-
+       
       dispatch(updateUserRequest());
         const config = {
             headers: {
@@ -36,6 +36,7 @@ export const updateUser = createAsyncThunk('user/updateUser',async ({id,userData
       return data.success;
 
     } catch (error) {
+      dispatch(updateUserFail(error.response.data.message))
       return rejectWithValue(error.response.data.message);
     }
   }

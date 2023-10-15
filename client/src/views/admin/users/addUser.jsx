@@ -5,6 +5,7 @@ import { TextField, Button, Select, MenuItem, InputLabel, FormControl, Grid, Car
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import Swal from 'sweetalert2';
+import axios from 'axios';
 import { newUserReset, newUser } from '../../../store/reducers/auth/newUserSlice';
 import defaultAvatar from '../../../components/assets/defaultavatar.png';
 
@@ -49,10 +50,28 @@ const AddUser = () => {
 
     const { loading, error, success } = useSelector(state => state.newUser);
     const [avatar, setAvatar] = useState("");
+    const [avatarPreview, setAvatarPreview] = useState(defaultAvatar);
+    const [selectedRole, setSelectedRole] = useState('');
+    const [storeDropdown, setStoreDropdown] = useState([]);
+    const [loadingOptions, setLoadingOptions] = useState(false);
 
-    const [avatarPreview, setAvatarPreview] = useState(
-        defaultAvatar
-    );
+    const fetchStores = () => {
+        axios.get(`${process.env.REACT_APP_API}/api/v1/admin/stores`)
+            .then((response) => {
+                console.log(response.data.stores)
+                const storeData = response.data.stores;
+                const options = storeData.map((store) => ({
+                    value: store._id,
+                    label: store.name,
+                }));
+                setStoreDropdown(options);
+                setLoadingOptions(true);
+            })
+            .catch((error) => {
+                console.error('Error fetching store data:', error);
+                setLoadingOptions(false);
+            });
+    }
 
     const initialValues = {
         fname: '',
@@ -65,6 +84,7 @@ const AddUser = () => {
     };
 
     useEffect(() => {
+        fetchStores();
         if (error) {
 
 
@@ -86,7 +106,7 @@ const AddUser = () => {
 
 
     const onSubmit = (data) => {
-        console.log(avatar)
+
         const userData = {
             fname: data.fname,
             lname: data.lname,
@@ -96,9 +116,18 @@ const AddUser = () => {
             religion: data.religion,
             role: data.role,
             avatar
+        };
+        if (data.role === "Employee" && data.store) {
+            const selectedStoreValue = data.store.split('-');
+            const storeId = selectedStoreValue[0];
+            const storeName = selectedStoreValue[1];
+            userData.storeId = storeId;
+            userData.storeName = storeName;
         }
+
         dispatch(newUser(userData));
     };
+
 
     // const onChange = (e) => {
     //     if (e.target.name === "avatar") {
@@ -115,16 +144,16 @@ const AddUser = () => {
     //     }
     // };
 
-    const handleImage = (e) =>{
+    const handleImage = (e) => {
         const file = e.target.files[0];
         setFileToBase(file);
         console.log(file);
     }
 
-    const setFileToBase = (file) =>{
+    const setFileToBase = (file) => {
         const reader = new FileReader();
         reader.readAsDataURL(file);
-        reader.onloadend = () =>{
+        reader.onloadend = () => {
             setAvatarPreview(reader.result);
             setAvatar(reader.result);
         }
@@ -199,6 +228,9 @@ const AddUser = () => {
                                             <MenuItem value="">
                                                 <em>None</em>
                                             </MenuItem>
+                                            <MenuItem value="Staff">
+                                                <em>Staff</em>
+                                            </MenuItem>
                                             <MenuItem value="BSIT">Bachelor of Science in Information Technology</MenuItem>
                                             <MenuItem value="CE">Bachelor of Science in Civil Engineering</MenuItem>
                                         </Select>
@@ -228,6 +260,10 @@ const AddUser = () => {
                                             label="Role"
                                             name="role"
                                             {...formik.getFieldProps('role')}
+                                            onChange={(e) => {
+                                                setSelectedRole(e.target.value);
+                                                formik.handleChange(e);
+                                            }}
                                         >
                                             <MenuItem value="">
                                                 <em>None</em>
@@ -237,6 +273,35 @@ const AddUser = () => {
                                         </Select>
                                         {formik.touched.role && formik.errors.role && <div>{formik.errors.role}</div>}
                                     </FormControl>
+
+
+                                    {selectedRole === 'Employee' && loadingOptions ?(
+                                        <FormControl
+                                            fullWidth
+                                            variant="outlined"
+                                            margin="normal"
+                                            error={formik.touched.store && Boolean(formik.errors.store)}
+                                        >
+                                            <InputLabel htmlFor="store">Store</InputLabel>
+                                            <Select
+                                                label="Store"
+                                                name="store"
+                                                {...formik.getFieldProps('store')}
+                                                required={selectedRole === 'Employee'}
+                                                >
+
+                                                <MenuItem value="">
+                                                    <em>None</em>
+                                                </MenuItem>
+                                                {storeDropdown.map((option) => (
+                                                    <MenuItem key={option.value} value={`${option.value}-${option.label}`}>
+                                                        {option.label}
+                                                    </MenuItem>
+                                                ))}
+                                            </Select>
+                                        </FormControl>
+                                    ): null}
+
 
                                     <FormControl fullWidth variant="outlined" margin="normal">
                                         <div className="d-flex align-items-center">
@@ -260,7 +325,7 @@ const AddUser = () => {
                                                     accept="image/*"
                                                     onChange={handleImage}
                                                     required
-                                                    style={{ display: 'none' }} // Hide the default file input
+                                                    style={{ display: 'none' }}
                                                 />
                                             </div>
                                             <Button
@@ -274,11 +339,7 @@ const AddUser = () => {
                                         </div>
                                     </FormControl>
 
-{/* <div className="form-outline mb-4">
-                <input onChange={handleImage}  type="file" id="formupload" name="image" className="form-control"  />
-                <label className="form-label" htmlFor="form4Example2">Image</label>
-            </div>
-            <img className="img-fluid" src={avatarPreview} alt="" /> */}
+
 
                                     <Button
                                         id="submitButton"
