@@ -6,6 +6,7 @@ import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import Swal from 'sweetalert2';
 import axios from 'axios';
+import Compressor from 'compressorjs';
 import { newUserReset, newUser } from '../../../store/reducers/auth/newUserSlice';
 import defaultAvatar from '../../../components/assets/defaultavatar.png';
 
@@ -129,36 +130,37 @@ const AddUser = () => {
     };
 
 
-    // const onChange = (e) => {
-    //     if (e.target.name === "avatar") {
-    //         const reader = new FileReader();
 
-    //         reader.onload = () => {
-    //             if (reader.readyState === 2) {
-    //                 setAvatarPreview(reader.result);
-    //                 setAvatar(reader.result);
-    //             }
-    //         };
+    const onChange = (e) => {
+        if (e.target.name === "avatar") {
+            const file = e.target.files[0];
 
-    //         reader.readAsDataURL(e.target.files[0]);
-    //     }
-    // };
-
-    const handleImage = (e) => {
-        const file = e.target.files[0];
-        setFileToBase(file);
-        console.log(file);
-    }
-
-    const setFileToBase = (file) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onloadend = () => {
-            setAvatarPreview(reader.result);
-            setAvatar(reader.result);
+            if (file) {
+                new Compressor(file, {
+                    quality: 0.6,
+                    maxWidth: 800,
+                    maxHeight: 800,
+                    success(result) {
+                        const reader = new FileReader();
+                        reader.onload = () => {
+                            if (reader.readyState === 2) {
+                                setAvatarPreview(reader.result);
+                                setAvatar(reader.result)
+                            }
+                        };
+                        reader.readAsDataURL(result);
+                    },
+                    error(err) {
+                        console.error('Image compression error:', err);
+                    },
+                });
+            }
         }
+    };
 
-    }
+
+
+
 
     return (
         <Grid >
@@ -249,7 +251,7 @@ const AddUser = () => {
                                             </MenuItem>
                                             <MenuItem value="Catholic">Catholic</MenuItem>
                                             <MenuItem value="Muslim">Muslim</MenuItem>
-                                            <MenuItem value="Iglesia Ni Cristo">Iglesia Ni Cristo</MenuItem>
+                                            <MenuItem value="Iglesia ni Cristo">Iglesia Ni Cristo</MenuItem>
                                         </Select>
                                         {formik.touched.religion && formik.errors.religion && <div>{formik.errors.religion}</div>}
                                     </FormControl>
@@ -275,7 +277,7 @@ const AddUser = () => {
                                     </FormControl>
 
 
-                                    {selectedRole === 'Employee' && loadingOptions ?(
+                                    {selectedRole === 'Employee' && loadingOptions ? (
                                         <FormControl
                                             fullWidth
                                             variant="outlined"
@@ -288,7 +290,7 @@ const AddUser = () => {
                                                 name="store"
                                                 {...formik.getFieldProps('store')}
                                                 required={selectedRole === 'Employee'}
-                                                >
+                                            >
 
                                                 <MenuItem value="">
                                                     <em>None</em>
@@ -300,7 +302,7 @@ const AddUser = () => {
                                                 ))}
                                             </Select>
                                         </FormControl>
-                                    ): null}
+                                    ) : null}
 
 
                                     <FormControl fullWidth variant="outlined" margin="normal">
@@ -323,7 +325,7 @@ const AddUser = () => {
                                                     className="custom-file-input"
                                                     id="avatar"
                                                     accept="image/*"
-                                                    onChange={handleImage}
+                                                    onChange={onChange}
                                                     required
                                                     style={{ display: 'none' }}
                                                 />

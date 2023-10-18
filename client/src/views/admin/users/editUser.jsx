@@ -6,6 +6,7 @@ import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import Swal from 'sweetalert2';
 import axios from 'axios';
+import Compressor from 'compressorjs';
 import { getUserDetails, userUpdated } from '../../../store/reducers/auth/userDetailsSlice';
 import { updateUser, clearErrors, updateUserReset } from '../../../store/reducers/auth/userSlice';
 import defaultAvatar from '../../../components/assets/defaultavatar.png';
@@ -70,15 +71,15 @@ const EditUser = () => {
             setStoreDropdown(options);
             setLoadingOptions(true);
             setSelectedRole(user.role);
-   
+
         } catch (error) {
             console.error('Error fetching store data:', error);
             setLoadingOptions(false);
         }
     };
-    
 
-    
+
+
 
     useEffect(() => {
 
@@ -150,7 +151,7 @@ const EditUser = () => {
             const storeName = selectedStoreValue[1];
             userData.storeId = storeId;
             userData.storeName = storeName;
-           
+
         }
 
         dispatch(updateUser({ id: user._id, userData }));
@@ -158,16 +159,28 @@ const EditUser = () => {
 
     const onChange = (e) => {
         if (e.target.name === "avatar") {
-            const reader = new FileReader();
+            const file = e.target.files[0];
 
-            reader.onload = () => {
-                if (reader.readyState === 2) {
-                    setAvatarPreview(reader.result);
-                    setAvatar(reader.result);
-                }
-            };
-
-            reader.readAsDataURL(e.target.files[0]);
+            if (file) {
+                new Compressor(file, {
+                    quality: 0.6,
+                    maxWidth: 800,
+                    maxHeight: 800,
+                    success(result) {
+                        const reader = new FileReader();
+                        reader.onload = () => {
+                            if (reader.readyState === 2) {
+                                setAvatarPreview(reader.result);
+                                setAvatar(reader.result)
+                            }
+                        };
+                        reader.readAsDataURL(result);
+                    },
+                    error(err) {
+                        console.error('Image compression error:', err);
+                    },
+                });
+            }
         }
     };
 
@@ -266,7 +279,7 @@ const EditUser = () => {
                                             </MenuItem>
                                             <MenuItem value="Catholic">Catholic</MenuItem>
                                             <MenuItem value="Muslim">Muslim</MenuItem>
-                                            <MenuItem value="Iglesia Ni Cristo">Iglesia Ni Cristo</MenuItem>
+                                            <MenuItem value="Iglesia ni Cristo">Iglesia Ni Cristo</MenuItem>
                                         </Select>
                                         {formik.touched.religion && formik.errors.religion && <div>{formik.errors.religion}</div>}
                                     </FormControl>
@@ -291,7 +304,7 @@ const EditUser = () => {
                                         {formik.touched.role && formik.errors.role && <div>{formik.errors.role}</div>}
                                     </FormControl>
 
-                                    {selectedRole === 'Employee' && loadingOptions  ? (
+                                    {selectedRole === 'Employee' && loadingOptions ? (
                                         <FormControl
                                             fullWidth
                                             variant="outlined"
@@ -303,7 +316,7 @@ const EditUser = () => {
                                                 name="store"
                                                 required={selectedRole === 'Employee'}
                                                 {...formik.getFieldProps('store')}
-                                
+
                                             >
 
                                                 <MenuItem value="">

@@ -5,8 +5,9 @@ import { TextField, Button, Select, MenuItem, InputLabel, FormControl, Grid, Car
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import Swal from 'sweetalert2';
+import Compressor from 'compressorjs';
 import { getStoreDetails, storeUpdated } from '../../../store/reducers/store/storeDetailsSlice';
-import { updateStore,clearErrors,updateStoreReset } from '../../../store/reducers/store/storeSlice';
+import { updateStore, clearErrors, updateStoreReset } from '../../../store/reducers/store/storeSlice';
 import defaultAvatar from '../../../components/assets/defaultavatar.png';
 
 
@@ -55,14 +56,14 @@ const EditStore = () => {
         defaultAvatar
     );
 
-    const initialValues =  store ? {
+    const initialValues = store ? {
         name: store.name || '',
         slogan: store.slogan || '',
         stall: store.stall || '',
         location: store.location || '',
         active: store.active === true ? "true" : "false" || '',
-       
-    } :{
+
+    } : {
 
         name: '',
         slogan: '',
@@ -116,16 +117,28 @@ const EditStore = () => {
 
     const onChange = (e) => {
         if (e.target.name === "logo") {
-            const reader = new FileReader();
+            const file = e.target.files[0];
 
-            reader.onload = () => {
-                if (reader.readyState === 2) {
-                    setLogoPreview(reader.result);
-                    setLogo(reader.result);
-                }
-            };
-
-            reader.readAsDataURL(e.target.files[0]);
+            if (file) {
+                new Compressor(file, {
+                    quality: 0.6,
+                    maxWidth: 800,
+                    maxHeight: 800,
+                    success(result) {
+                        const reader = new FileReader();
+                        reader.onload = () => {
+                            if (reader.readyState === 2) {
+                                setLogoPreview(reader.result);
+                                setLogo(reader.result)
+                            }
+                        };
+                        reader.readAsDataURL(result);
+                    },
+                    error(err) {
+                        console.error('Image compression error:', err);
+                    },
+                });
+            }
         }
     };
 
@@ -228,7 +241,6 @@ const EditStore = () => {
                                                     id="logo"
                                                     accept="image/*"
                                                     onChange={onChange}
-                                                    required
                                                     style={{ display: 'none' }} // Hide the default file input
                                                 />
                                             </div>
