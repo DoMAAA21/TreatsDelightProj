@@ -10,23 +10,23 @@ const {
  newStore
 } = require("../controllers/storeController");
 
-// const {
-//   isAuthenticatedUser,
+const {
+  isAuthenticatedUser,
 
-//   authorizeRoles,
-// } = require("../middlewares/auth");
+  authorizeRoles,
+} = require("../middlewares/auth");
 
 router
   .route("/admin/stores")
-  .get(allStores);
+  .get(isAuthenticatedUser,authorizeRoles('Admin', 'Employee'),allStores);
 
 
 router.route('/admin/store/:id')
-  .get(getStoreDetails)
-  .put(upload.single("logo"), updateStore)
-  .delete(deleteStore);
+  .get(isAuthenticatedUser,authorizeRoles('Admin', 'Employee'),getStoreDetails)
+  .put(isAuthenticatedUser,authorizeRoles('Admin', 'Employee'),upload.single("logo"), updateStore)
+  .delete(isAuthenticatedUser,authorizeRoles('Admin', 'Employee'),deleteStore);
 
-router.post("/admin/store/new", upload.single("logo"), newStore);
+router.post("/admin/store/new",isAuthenticatedUser,authorizeRoles('Admin', 'Employee'), upload.single("logo"), newStore);
 
 
 

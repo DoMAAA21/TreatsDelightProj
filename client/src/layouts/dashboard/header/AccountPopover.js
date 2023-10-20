@@ -37,27 +37,14 @@ const successMsg = (message = '') =>
     showConfirmButton: false,
   });
 
-const errorMsg = (message = '') =>
-  Swal.fire({
-    title: `Error`,
-    text: `${message}`,
-    icon: 'error',
-    iconColor: 'white',
-    timer: 3500,
-    timerProgressBar: true,
-    toast: true,
-    position: 'bottom-end',
-    background: 'red',
-    color: 'white',
-    showConfirmButton: false,
-  });
+
 // ----------------------------------------------------------------------
 
 export default function AccountPopover() {
   const [open, setOpen] = useState(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { user, loading } = useSelector((state) => state.auth);
+  const { user } = useSelector((state) => state.auth);
 
   const handleOpen = (event) => {
     setOpen(event.currentTarget);

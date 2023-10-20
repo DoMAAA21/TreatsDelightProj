@@ -4,7 +4,11 @@ const express = require("express");
 
 const router = express.Router();
 
-;
+
+const {
+  isAuthenticatedUser,
+  authorizeRoles,
+} = require("../middlewares/auth");
 
 
 
@@ -34,25 +38,19 @@ const {
   newUser
 } = require("../controllers/userController");
 
-// const {
-//   isAuthenticatedUser,
-
-//   authorizeRoles,
-// } = require("../middlewares/auth");
 
 router
   .route("/admin/users")
-  .get(allUsers);
-
-
+  .get(isAuthenticatedUser,authorizeRoles('Admin', 'Employee'),allUsers);
+router.post("/admin/user/new",isAuthenticatedUser,authorizeRoles('Admin', 'Employee'), upload.single("avatar"), newUser);
 router.route('/admin/user/:id')
-  .get(getUserDetails)
-  .put(upload.single("avatar"),updateUser)
-  .delete(deleteUser);
+  .get(isAuthenticatedUser,authorizeRoles('Admin', 'Employee'),getUserDetails)
+  .put(isAuthenticatedUser,authorizeRoles('Admin', 'Employee'),upload.single("avatar"),updateUser)
+  .delete(isAuthenticatedUser,authorizeRoles('Admin', 'Employee'),deleteUser);
 // // router.route("/admin/newuser").post(newUser);
 
 // router.post("/admin/newuser",  upload.array('avatar', 10), newUser);
-router.post("/admin/user/new", upload.single("avatar"), newUser);
+
 // router.put(
 //   "/me/update",
 //   isAuthenticatedUser,
