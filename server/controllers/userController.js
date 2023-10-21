@@ -322,7 +322,7 @@ exports.registerUser = async (req, res, next) => {
       password,
       avatar: {
         public_id: 'avatars/oqqqt5immgammiknebvc',
-        url: 'https://res.cloudinary.com/djttinjoh/image/upload/v1693557721/avatars/obqkjcamxyukpcrqeui5.png',
+        url: 'https://res.cloudinary.com/djttinjoh/image/upload/v1693557587/defaultavatar_pwre4e.png',
       },
     });
     sendToken(user, 200, res);

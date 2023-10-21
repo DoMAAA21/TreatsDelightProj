@@ -54,7 +54,7 @@ const userSchema = new mongoose.Schema({
 
       required: true,
 
-      default: "https://wallpapercave.com/wp/wc1700893.jpg",
+      default: "https://res.cloudinary.com/djttinjoh/image/upload/v1693557587/defaultavatar_pwre4e.png",
     },
   },
   course: {
@@ -69,7 +69,7 @@ const userSchema = new mongoose.Schema({
   role: {
     type: String,
 
-    default: "user",
+    default: "User",
   },
 
   googleId: {
