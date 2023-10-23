@@ -61,7 +61,7 @@ const EditUser = () => {
 
     const fetchStores = async () => {
         try {
-            const response = await axios.get(`${process.env.REACT_APP_API}/api/v1/admin/stores`);
+            const response = await axios.get(`${process.env.REACT_APP_API}/api/v1/stores`);
             console.log(response.data.stores);
             const storeData = response.data.stores;
             const options = storeData.map((store) => ({

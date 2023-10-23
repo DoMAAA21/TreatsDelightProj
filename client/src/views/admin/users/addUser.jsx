@@ -57,7 +57,7 @@ const AddUser = () => {
     const [loadingOptions, setLoadingOptions] = useState(false);
 
     const fetchStores = () => {
-        axios.get(`${process.env.REACT_APP_API}/api/v1/admin/stores`)
+        axios.get(`${process.env.REACT_APP_API}/api/v1/stores`)
             .then((response) => {
                 console.log(response.data.stores)
                 const storeData = response.data.stores;
