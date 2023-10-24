@@ -3,7 +3,8 @@ const express = require("express");
 const router = express.Router();
 
 const {
- allProducts
+ allProducts,
+ newProduct
 } = require("../controllers/productController");
 
 const {
@@ -16,6 +17,8 @@ const {
 router
   .route("/admin/store/:id/products")
   .get(allProducts);
+  
+router.post("/admin/product/new", upload.single("image"), newProduct);
 
 
 

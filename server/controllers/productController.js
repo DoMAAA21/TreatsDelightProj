@@ -4,7 +4,6 @@ const cloudinary = require("cloudinary");
 
 exports.allProducts = async (req, res, next) => {
   const storeId = req.params.id;
-  console.log(req.params.id);
   const products = await Product.find({ 'store.storeId': storeId });
 
   res.status(200).json({
@@ -13,5 +12,48 @@ exports.allProducts = async (req, res, next) => {
     products,
   });
 };
+
+exports.newProduct = async (req, res, next) => {
+  const { name, description, costPrice, sellPrice, stock, category, active, image, storeId, storeName } = req.body;
+
+  try {
+   
+    const result = await cloudinary.v2.uploader.upload(image, {
+      folder: 'products',
+    });
+
+    const store = await Product.create({
+      name,
+      description,
+      costPrice,
+      sellPrice,
+      stock,
+      category,
+      active,
+      store: {
+        storeId: storeId,
+        name: storeName,
+      },
+      firstImage: {
+        public_id: result.public_id,
+        url: result.secure_url,
+      },
+    });
+
+    res.status(201).json({
+      success: true,
+      store,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: 'An error occurred while creating the Product.',
+    });
+  }
+};
+
+
+
 
 

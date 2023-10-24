@@ -55,6 +55,10 @@ exports.newUser = async (req, res, next) => {
       role,
       email,
       password,
+      store : {
+        storeId: storeId,
+        name: storeName,
+      },
       avatar: {
         public_id: result.public_id,
         url: result.secure_url,
