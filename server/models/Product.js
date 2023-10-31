@@ -93,14 +93,14 @@ const productSchema = new mongoose.Schema({
   store: {
     storeId: {
       type: mongoose.Schema.Types.ObjectId,
-      required: false,
+      required: true,
       ref: 'Store'
     },
 
     name: {
       type: String,
 
-      required: false,
+      required: true,
     }
   },
   active: {

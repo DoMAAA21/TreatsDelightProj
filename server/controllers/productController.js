@@ -14,8 +14,8 @@ exports.allProducts = async (req, res, next) => {
 };
 
 exports.newProduct = async (req, res, next) => {
-  const { name, description, costPrice, sellPrice, stock, category, active, image, storeId, storeName } = req.body;
-
+  const { name, description, costPrice, sellPrice, stock, category, active, storeId, storeName } = req.body;
+  const image = req?.file?.path;
   try {
    
     const result = await cloudinary.v2.uploader.upload(image, {

@@ -16,8 +16,9 @@ exports.allStores = async (req, res, next) => {
 
 
 exports.newStore = async (req, res, next) => {
-  const { name, slogan, stall, location, active, logo } = req.body;
-
+  const { name, slogan, stall, location, active } = req.body;
+  const logo = req?.file?.path;
+  
   try {
    
     const result = await cloudinary.v2.uploader.upload(logo, {
@@ -101,19 +102,13 @@ exports.updateStore = async (req, res, next) => {
     active: req.body.active,
   };
 
-  if (req.body.logo !== '') {
+  if (req.file && req.file.path !== null) {
     const store = await Store.findById(req.params.id);
     const image_id = store.logo.public_id;
     const res = await cloudinary.uploader.destroy(image_id);
-    const result = await cloudinary.v2.uploader.upload(
-      req.body.logo,
-      {
+    const result = await cloudinary.v2.uploader.upload(req.file.path,{
         folder: "stores",
-      },
-      (err, res) => {
-        console.log(err, res);
-      }
-    );
+    });
     newStoreData.logo = {
       public_id: result.public_id,
       url: result.secure_url,

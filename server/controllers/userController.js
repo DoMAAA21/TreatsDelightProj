@@ -24,8 +24,8 @@ exports.allUsers = async (req, res, next) => {
 
 
 exports.newUser = async (req, res, next) => {
-  const { fname, lname, course, religion, role, email, password, avatar, storeId, storeName } = req.body;
-
+  const { fname, lname, course, religion, role, email, password, storeId, storeName } = req.body;
+  const avatar = req?.file?.path;
   try {
     const existingUser = await User.findOne({ email });
 
@@ -127,7 +127,7 @@ exports.getUserDetails = async (req, res, next) => {
 };
 
 exports.updateUser = async (req, res, next) => {
-  const { fname, lname, course, religion, role, email, password, avatar, storeId, storeName } = req.body;
+  const { fname, lname, course, religion, role, email, password, storeId, storeName } = req.body;
 
   try {
     const user = await User.findById(req.params.id);
@@ -169,13 +169,13 @@ exports.updateUser = async (req, res, next) => {
 
    
 
-    if (avatar !== '') {
+    if (req.file && req.file.path !== null) {
       // Delete the previous avatar
       const image_id = user.avatar.public_id;
       const deleteResult = await cloudinary.uploader.destroy(image_id);
 
       // Upload the new avatar
-      const result = await cloudinary.uploader.upload(avatar, {
+      const result = await cloudinary.uploader.upload(req.file.path, {
         folder: "avatars",
       });
 
