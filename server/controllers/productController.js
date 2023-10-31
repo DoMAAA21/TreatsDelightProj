@@ -54,6 +54,41 @@ exports.newProduct = async (req, res, next) => {
 };
 
 
+exports.deleteProduct = async (req, res, next) => {
+  const product = await Product.findById(req.params.id);
+  if (!product) {
+    return next(
+      new ErrorHandler(`Product not found with id: ${req.params.id}`)
+    );
+  }
+  const image_id = product.firstImage.public_id;
+  if(image_id){
+    await cloudinary.v2.uploader.destroy(image_id);
+  }
+  await product.deleteOne();
+
+  res.status(200).json({
+    success: true,
+  });
+};
+
+exports.getProductDetails = async (req, res, next) => {
+  const product = await Product.findById(req.params.id);
+
+  if (!product) {
+    return next(
+      new ErrorHandler(`Product not found with id: ${req.params.id}`)
+    );
+  }
+
+  res.status(200).json({
+    success: true,
+
+    product,
+  });
+};
+
+
 
 
 
