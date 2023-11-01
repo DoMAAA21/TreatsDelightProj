@@ -22,7 +22,7 @@ exports.newProduct = async (req, res, next) => {
       folder: 'products',
     });
 
-    const store = await Product.create({
+    const product = await Product.create({
       name,
       description,
       costPrice,
@@ -42,7 +42,7 @@ exports.newProduct = async (req, res, next) => {
 
     res.status(201).json({
       success: true,
-      store,
+      product,
     });
   } catch (error) {
     console.error(error);

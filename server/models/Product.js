@@ -78,17 +78,9 @@ const productSchema = new mongoose.Schema({
     },
   },
   category: {
-    storeId: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: false,
-      ref: 'Category'
-    },
-
-    name: {
       type: String,
 
       required: false,
-    }
   },
   store: {
     storeId: {
