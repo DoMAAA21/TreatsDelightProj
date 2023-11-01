@@ -38,7 +38,11 @@ const productSchema = new mongoose.Schema({
 
     default: 0,
   },
-  firstImage: {
+  images:[ {
+    index: {
+      type: Number,
+      required: true,
+    },
     public_id: {
       type: String,
 
@@ -50,33 +54,7 @@ const productSchema = new mongoose.Schema({
 
       required: true,
     },
-  },
-  secondImage: {
-    public_id: {
-      type: String,
-
-      required: false,
-    },
-
-    url: {
-      type: String,
-
-      required: false,
-    },
-  },
-  thirdImage: {
-    public_id: {
-      type: String,
-
-      required: false,
-    },
-
-    url: {
-      type: String,
-
-      required: false,
-    },
-  },
+  }],
   category: {
       type: String,
 

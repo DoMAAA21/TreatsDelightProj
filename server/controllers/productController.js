@@ -14,63 +14,103 @@ exports.allProducts = async (req, res, next) => {
 };
 
 exports.newProduct = async (req, res, next) => {
-  const { name, description, costPrice, sellPrice, stock, category, active, storeId, storeName } = req.body;
-  const image = req?.file?.path;
+    const { name, description, costPrice, sellPrice, stock, category, active, storeId, storeName } = req.body;
+    try {
+        const imagePaths = [];
+        if (req.files.firstImage) {
+            const firstImage = req.files.firstImage[0];
+            const firstImageResult = await cloudinary.v2.uploader.upload(firstImage.path, {
+                folder: 'products',
+            });
+            imagePaths.push({
+                index: 0,
+                public_id: firstImageResult.public_id,
+                url: firstImageResult.secure_url,
+            });
+        }
+        if (req.files.secondImage) {
+            const secondImage = req.files.secondImage[0];
+            const secondImageResult = await cloudinary.v2.uploader.upload(secondImage.path, {
+                folder: 'products',
+            });
+            imagePaths.push({
+                index: 1,
+                public_id: secondImageResult.public_id,
+                url: secondImageResult.secure_url,
+            });
+        }
+        if (req.files.thirdImage) {
+            const thirdImage = req.files.thirdImage[0];
+            const thirdImageResult = await cloudinary.v2.uploader.upload(thirdImage.path, {
+                folder: 'products',
+            });
+            imagePaths.push({
+                index: 2,
+                public_id: thirdImageResult.public_id,
+                url: thirdImageResult.secure_url,
+            });
+        }
+
+        const product = await Product.create({
+            name,
+            description,
+            costPrice,
+            sellPrice,
+            stock,
+            category,
+            active,
+            images: imagePaths, 
+            store: {
+                storeId: storeId,
+                name: storeName,
+            },
+            
+        });
+
+        res.status(201).json({
+            success: true,
+            product,
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            success: false,
+            message: 'An error occurred while creating the Product.',
+        });
+    }
+};
+
+
+
+exports.deleteProduct = async (req, res, next) => {
   try {
-   
-    const result = await cloudinary.v2.uploader.upload(image, {
-      folder: 'products',
-    });
+    const product = await Product.findById(req.params.id);
+    if (!product) {
+      return next(new ErrorHandler(`Product not found with id: ${req.params.id}`));
+    }
 
-    const product = await Product.create({
-      name,
-      description,
-      costPrice,
-      sellPrice,
-      stock,
-      category,
-      active,
-      store: {
-        storeId: storeId,
-        name: storeName,
-      },
-      firstImage: {
-        public_id: result.public_id,
-        url: result.secure_url,
-      },
-    });
+    const imageIds = product.images.map((image) => image.public_id);
+    for (const imageId of imageIds) {
+      if (imageId) {
+        await cloudinary.v2.uploader.destroy(imageId);
+      }
+    }
 
-    res.status(201).json({
+    // Delete the product from the database
+    await product.deleteOne();
+
+    res.status(200).json({
       success: true,
-      product,
     });
   } catch (error) {
     console.error(error);
     res.status(500).json({
       success: false,
-      message: 'An error occurred while creating the Product.',
+      message: 'An error occurred while deleting the product.',
     });
   }
 };
 
-
-exports.deleteProduct = async (req, res, next) => {
-  const product = await Product.findById(req.params.id);
-  if (!product) {
-    return next(
-      new ErrorHandler(`Product not found with id: ${req.params.id}`)
-    );
-  }
-  const image_id = product.firstImage.public_id;
-  if(image_id){
-    await cloudinary.v2.uploader.destroy(image_id);
-  }
-  await product.deleteOne();
-
-  res.status(200).json({
-    success: true,
-  });
-};
 
 exports.getProductDetails = async (req, res, next) => {
   const product = await Product.findById(req.params.id);

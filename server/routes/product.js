@@ -24,7 +24,11 @@ router.route('/admin/product/:id')
 .get(isAuthenticatedUser,authorizeRoles('Admin', 'Employee'),getProductDetails)
 .delete(isAuthenticatedUser,authorizeRoles('Admin', 'Employee'),deleteProduct);
   
-router.post("/admin/product/new", upload.single("image"), newProduct);
+router.post("/admin/product/new", upload.fields([
+  { name: 'firstImage', maxCount: 1 }, 
+  { name: 'secondImage', maxCount: 1 }, 
+  { name: 'thirdImage', maxCount: 1 },  
+]), newProduct);
 
 
 module.exports = router;
