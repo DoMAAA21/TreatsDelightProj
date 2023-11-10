@@ -59,7 +59,7 @@ const userSchema = new mongoose.Schema({
   },
   course: {
     type: String,
-    required: true,
+    required: false,
   },
   religion: {
     type: String,
