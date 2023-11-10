@@ -16,6 +16,7 @@ exports.allStores = async (req, res, next) => {
 
 
 exports.newStore = async (req, res, next) => {
+  console.log(req.file)
   const { name, slogan, stall, location, active } = req.body;
   const logo = req?.file?.path;
   
@@ -94,6 +95,7 @@ exports.getStoreDetails = async (req, res, next) => {
 };
 
 exports.updateStore = async (req, res, next) => {
+  console.log(req.body)
   const newStoreData = {
     name: req.body.name,
     slogan: req.body.slogan,
@@ -101,6 +103,7 @@ exports.updateStore = async (req, res, next) => {
     location: req.body.location,
     active: req.body.active,
   };
+  // console.log(newStoreData);
 
   if (req.file && req.file.path !== null) {
     const store = await Store.findById(req.params.id);
@@ -124,10 +127,12 @@ exports.updateStore = async (req, res, next) => {
     useFindAndModify: false
   });
 
+  
   res.status(200).json({
     success: true,
     store
   });
+  console.log(res)
 };
 
 

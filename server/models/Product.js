@@ -29,6 +29,11 @@ const productSchema = new mongoose.Schema({
 
     maxLength: [10, "Sell Price cannot exceed 10 characters"],
   },
+  portion:{
+    type: Boolean,
+    default: false,
+    required: true,
+  },
   stock: {
     type: Number,
 
