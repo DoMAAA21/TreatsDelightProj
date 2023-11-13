@@ -36,7 +36,7 @@ exports.newUser = async (req, res, next) => {
       });
     }
 
-    if (avatar === '') {
+    if (!avatar) {
       return res.status(400).json({
         success: false,
         message: 'Please Provide Avatar',

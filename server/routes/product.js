@@ -7,7 +7,8 @@ const {
  newProduct,
  deleteProduct,
  getProductDetails,
- updateProduct
+ updateProduct,
+ updateProductStatus
 } = require("../controllers/productController");
 
 const {
@@ -29,15 +30,13 @@ router.route('/admin/product/:id')
   { name: 'secondImage', maxCount: 1 }, 
   { name: 'thirdImage', maxCount: 1 },  
 ]), updateProduct)
-// .post(upload.array('images',10), updateProduct)
-.delete(isAuthenticatedUser,authorizeRoles('Admin', 'Employee'),deleteProduct);
+.delete(isAuthenticatedUser,authorizeRoles('Admin', 'Employee'),deleteProduct)
+
 router.post("/admin/product/new", upload.fields([
   { name: 'firstImage', maxCount: 1 }, 
   { name: 'secondImage', maxCount: 1 }, 
   { name: 'thirdImage', maxCount: 1 },  
 ]), newProduct);
 
-
-
-
+router.route('/admin/product/status/:id').put(updateProductStatus);
 module.exports = router;

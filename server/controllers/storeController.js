@@ -16,11 +16,17 @@ exports.allStores = async (req, res, next) => {
 
 
 exports.newStore = async (req, res, next) => {
-  console.log(req.file)
   const { name, slogan, stall, location, active } = req.body;
   const logo = req?.file?.path;
   
   try {
+
+    if (!logo) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please Provide Logo',
+      });
+    }
    
     const result = await cloudinary.v2.uploader.upload(logo, {
       folder: 'stores',
@@ -103,7 +109,7 @@ exports.updateStore = async (req, res, next) => {
     location: req.body.location,
     active: req.body.active,
   };
-  // console.log(newStoreData);
+ 
 
   if (req.file && req.file.path !== null) {
     const store = await Store.findById(req.params.id);

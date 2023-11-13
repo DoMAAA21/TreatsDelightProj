@@ -17,6 +17,12 @@ exports.newProduct = async (req, res, next) => {
     const { name, description, costPrice, sellPrice, stock, portion, category, active, storeId, storeName } = req.body;
     try {
         const imagePaths = [];
+        if (!req.files.firstImage) {
+          return res.status(400).json({
+            success: false,
+            message: 'Please Provide  Image at the Leftmost',
+          });
+        }
         if (req.files.firstImage) {
             const firstImage = req.files.firstImage[0];
             const firstImageResult = await cloudinary.v2.uploader.upload(firstImage.path, {
@@ -114,7 +120,9 @@ exports.deleteProduct = async (req, res, next) => {
 
 
 exports.getProductDetails = async (req, res, next) => {
+  console.log(req.params.id)
   const product = await Product.findById(req.params.id);
+
 
   if (!product) {
     return next(
@@ -222,11 +230,32 @@ exports.updateProduct = async (req, res, next) => {
 };
 
 
+exports.updateProductStatus = async (req, res, next) => {
+  try {
+    const oldProduct = await Product.findById(req.params.id);
+    const product = await Product.findByIdAndUpdate(
+      req.params.id,
+      { $set: { active: !oldProduct.active } },
+      { new: true, runValidators: true, useFindAndModify: false }
+    );
 
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: 'Product not found.',
+      });
+    }
 
-
-
-
-
+    res.status(200).json({
+      success: true,
+      oldProduct,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'An error occurred while updating the Product.',
+    });
+  }
+};
 
 
