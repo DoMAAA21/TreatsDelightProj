@@ -5,10 +5,21 @@ const User = require("../models/User");
 const ErrorHandler = require("../utils/errorHandler");
 const sendToken = require("../utils/jwtToken");
 const bcrypt = require("bcryptjs");
-// const sendEmail = require("../utils/sendEmail");
+const jwt = require('jsonwebtoken');
 const cloudinary = require("cloudinary");
 
-
+exports.verifyToken = (req, res, next) => {
+  const token = req.body.token;
+  if (!token) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+    if (err) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+    next();
+  });
+};
 
 exports.allUsers = async (req, res, next) => {
   const users = await User.find();
@@ -209,21 +220,15 @@ exports.updateUser = async (req, res, next) => {
 exports.loginUser = async (req, res, next) => {
   const { email, password } = req.body;
 
-  // Checks if email and password is entered by user
-
   if (!email || !password) {
     return next(new ErrorHandler("Please enter email & password", 400));
   }
 
-  // Finding user in database
-  // res.setHeader('Set-Cookie', 'isLoggedin=true');
   const user = await User.findOne({ email }).select("+password");
 
   if (!user) {
     return next(new ErrorHandler("Invalid Email or Password", 401));
   }
-
-  // Checks if password is correct or not
 
   const isPasswordMatched = await user.comparePassword(password);
 
@@ -231,13 +236,7 @@ exports.loginUser = async (req, res, next) => {
     return next(new ErrorHandler("Invalid Email or Password", 401));
   }
 
-  // console.log(user.token)
   const token = user.getJwtToken();
-
-  // res.send("Thanks for visiting");
-
-
-
   sendToken(user, 200, res);
 };
 

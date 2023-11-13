@@ -120,7 +120,6 @@ exports.deleteProduct = async (req, res, next) => {
 
 
 exports.getProductDetails = async (req, res, next) => {
-  console.log(req.params.id)
   const product = await Product.findById(req.params.id);
 
 
