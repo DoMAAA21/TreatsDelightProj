@@ -39,7 +39,7 @@ const {
   newUser
 } = require("../controllers/userController");
 
-router.post("verify-token",verifyToken);
+router.post("/verify-token",verifyToken);
 router
   .route("/admin/users")
   .get(isAuthenticatedUser,authorizeRoles('Admin', 'Employee'),allUsers);

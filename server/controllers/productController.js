@@ -4,7 +4,32 @@ const cloudinary = require("cloudinary");
 
 exports.allProducts = async (req, res, next) => {
   const storeId = req.params.id;
-  const products = await Product.find({ 'store.storeId': storeId });
+  const products = await Product.find({ 'store.storeId': storeId,
+  $nor: [
+    { category: 'Meals' },
+  ],
+  });
+
+  res.status(200).json({
+    success: true,
+
+    products,
+  });
+};
+
+exports.allMeals = async (req, res, next) => {
+  const storeId = req.params.id;
+  const products = await Product.find({$and:[{ 'store.storeId': storeId,'category':'Meals'}]});
+
+  res.status(200).json({
+    success: true,
+
+    products,
+  });
+};
+
+exports.allItems = async (req, res, next) => {
+  const products = await Product.find();
 
   res.status(200).json({
     success: true,

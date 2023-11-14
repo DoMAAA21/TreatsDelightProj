@@ -17,7 +17,7 @@ exports.verifyToken = (req, res, next) => {
     if (err) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
-    next();
+    return res.status(201).json({ success: 'Authorized' })
   });
 };
 

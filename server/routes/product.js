@@ -8,7 +8,9 @@ const {
  deleteProduct,
  getProductDetails,
  updateProduct,
- updateProductStatus
+ updateProductStatus,
+ allMeals,
+ allItems
 } = require("../controllers/productController");
 
 const {
@@ -19,9 +21,9 @@ const {
 } = require("../middlewares/auth");
 
 
-router
-  .route("/admin/store/:id/products")
-  .get(allProducts);
+router.get("/admin/store/:id/products",isAuthenticatedUser,authorizeRoles('Admin', 'Employee'),allProducts);
+router.get("/admin/store/:id/meals",isAuthenticatedUser,authorizeRoles('Admin', 'Employee'),allMeals);
+router.get("/allProducts",allItems);
 
 router.route('/admin/product/:id')
 .get(isAuthenticatedUser,authorizeRoles('Admin', 'Employee'),getProductDetails)
