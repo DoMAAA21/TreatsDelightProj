@@ -40,5 +40,8 @@ router.post("/admin/product/new", upload.fields([
   { name: 'thirdImage', maxCount: 1 },  
 ]), newProduct);
 
+router.route('/product/:id')
+.get(getProductDetails)
+
 router.route('/admin/product/status/:id').put(updateProductStatus);
 module.exports = router;
