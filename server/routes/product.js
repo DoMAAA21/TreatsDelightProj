@@ -23,7 +23,7 @@ const {
 
 router.get("/admin/store/:id/products",isAuthenticatedUser,authorizeRoles('Admin', 'Employee'),allProducts);
 router.get("/admin/store/:id/meals",isAuthenticatedUser,authorizeRoles('Admin', 'Employee'),allMeals);
-router.get("/allProducts",allItems);
+router.get("/allItems",allItems);
 
 router.route('/admin/product/:id')
 .get(isAuthenticatedUser,authorizeRoles('Admin', 'Employee'),getProductDetails)

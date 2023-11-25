@@ -29,14 +29,29 @@ exports.allMeals = async (req, res, next) => {
 };
 
 exports.allItems = async (req, res, next) => {
-  const products = await Product.find();
-
-  res.status(200).json({
-    success: true,
-
-    products,
-  });
+  try {
+    const allProducts = await Product.find();
+    const shuffledProducts = shuffleArray(allProducts);
+    res.status(200).json({
+      success: true,
+      products: shuffledProducts,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      error: 'Internal Server Error',
+    });
+  }
 };
+
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
 
 exports.newProduct = async (req, res, next) => {
     const { name, description, costPrice, sellPrice, stock, portion, category, active, storeId, storeName } = req.body;
