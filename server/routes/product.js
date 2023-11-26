@@ -10,7 +10,8 @@ const {
  updateProduct,
  updateProductStatus,
  allMeals,
- allItems
+ allItems,
+ updateStocks
 } = require("../controllers/productController");
 
 const {
@@ -43,5 +44,6 @@ router.post("/admin/product/new", upload.fields([
 router.route('/product/:id')
 .get(getProductDetails)
 
-router.route('/admin/product/status/:id').put(updateProductStatus);
+router.route('/admin/product/status/:id').put(isAuthenticatedUser,authorizeRoles('Admin', 'Employee'),updateProductStatus);
+router.route('/admin/product/update-stocks').patch(updateStocks);
 module.exports = router;

@@ -1,7 +1,6 @@
 const Product = require("../models/Product");
 const ErrorHandler = require("../utils/errorHandler");
 const cloudinary = require("cloudinary");
-
 exports.allProducts = async (req, res, next) => {
   const storeId = req.params.id;
   const products = await Product.find({ 'store.storeId': storeId,
@@ -30,7 +29,7 @@ exports.allMeals = async (req, res, next) => {
 
 exports.allItems = async (req, res, next) => {
   try {
-    const allProducts = await Product.find();
+    const allProducts = await Product.find({ active: true });
     const shuffledProducts = shuffleArray(allProducts);
     res.status(200).json({
       success: true,
@@ -296,5 +295,49 @@ exports.updateProductStatus = async (req, res, next) => {
     });
   }
 };
+
+
+exports.updateStocks = async (req, res, next) => {
+  try {
+    const updates = req.body.updatedStocks;
+    if (!Array.isArray(updates) || updates.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'No Changes',
+      });
+    }
+    const updatePromises = updates.map(async ({ _id, stock }) => {
+      const oldProduct = await Product.findById(_id);
+      if (!oldProduct) {
+        return {
+          success: false,
+          message: `Product with ID ${_id} not found.`,
+        };
+      }
+      const updatedProduct = await Product.findByIdAndUpdate(
+        _id,
+        { $set: { stock: stock } },
+        { new: true, runValidators: true, useFindAndModify: false }
+      );
+      return {
+        success: true,
+        oldProduct,
+        updatedProduct,
+      };
+    });
+    const updateResults = await Promise.all(updatePromises);
+    res.status(200).json({
+      success: true,
+      updateResults,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: 'An error occurred while updating the stocks.',
+    });
+  }
+};
+
 
 
