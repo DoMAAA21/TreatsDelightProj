@@ -1,6 +1,4 @@
 const Order = require('../models/Order');
-// const Product = require('../models/product');
-const ErrorHandler = require('../utils/errorHandler');
 
 
 exports.newOrder = async (req, res, next) => {
