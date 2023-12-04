@@ -142,6 +142,36 @@ exports.updateStore = async (req, res, next) => {
 };
 
 
+exports.updateStoreStatus = async (req, res, next) => {
+  try {
+    const oldStore = await Store.findById(req.params.id);
+    
+
+    if (!oldStore) {
+      return res.status(404).json({
+        success: false,
+        message: 'Store not found.',
+      });
+    }
+    const updatedStore = await Store.findByIdAndUpdate(
+      req.params.id,
+      { $set: { active: !oldStore.active } },
+      { new: true, runValidators: true, useFindAndModify: false }
+    );
+    res.status(200).json({
+      success: true,
+      message: 'Store status updated successfully.',
+      updatedStore: updatedStore,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: 'An error occurred while updating the Store status.',
+    });
+  }
+};
+
 
 
 

@@ -7,7 +7,8 @@ const {
  getStoreDetails,
  updateStore,
  deleteStore,
- newStore
+ newStore,
+ updateStoreStatus
 } = require("../controllers/storeController");
 
 const {
@@ -31,5 +32,5 @@ router.route("/stores").get(allStores);
 
 
 
-
+router.route('/admin/store/status/:id').put(updateStoreStatus);
 module.exports = router;
