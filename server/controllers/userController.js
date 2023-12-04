@@ -216,6 +216,82 @@ exports.updateUser = async (req, res, next) => {
   }
 };
 
+exports.updateProfile = async (req, res, next) => {
+  const { fname, lname, course, religion, email, password } = req.body;
+
+  try {
+    const user = await User.findById(req.params.id);
+    
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found.',
+      });
+    }
+
+    if (email !== user.email) {
+      // Check if the email already exists in the database
+      const existingUser = await User.findOne({ email });
+
+      if (existingUser) {
+        return res.status(400).json({
+          success: false,
+          message: 'Email is already registered.',
+        });
+      }
+    }
+
+    const newUserData = {
+      fname,
+      lname,
+      course,
+      religion,
+      email,
+    };
+
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, 10); // You can adjust the salt rounds as needed
+      newUserData.password = hashedPassword;
+    }
+
+   
+
+    if (req.file && req.file.path !== null) {
+      // Delete the previous avatar
+      const image_id = user.avatar.public_id;
+      const deleteResult = await cloudinary.uploader.destroy(image_id);
+
+      // Upload the new avatar
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: "avatars",
+      });
+
+      newUserData.avatar = {
+        public_id: result.public_id,
+        url: result.secure_url,
+      };
+    }
+
+    // Update the user's data
+    const updatedUser = await User.findByIdAndUpdate(req.params.id, newUserData, {
+      new: true,
+      runValidators: true,
+      useFindAndModify: false,
+    });
+
+    res.status(200).json({
+      success: true,
+      user: updatedUser,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: 'An error occurred while updating the user.',
+    });
+  }
+};
+
 
 exports.loginUser = async (req, res, next) => {
   const { email, password } = req.body;

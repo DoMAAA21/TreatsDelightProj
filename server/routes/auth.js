@@ -29,7 +29,7 @@ const {
 
   allUsers,
 
-  //   updateProfile,
+    updateProfile,
 
   getUserDetails,
 
@@ -48,6 +48,9 @@ router.route('/admin/user/:id')
   .get(isAuthenticatedUser,authorizeRoles('Admin', 'Employee'),getUserDetails)
   .put(isAuthenticatedUser,authorizeRoles('Admin', 'Employee'),upload.single("avatar"),updateUser)
   .delete(isAuthenticatedUser,authorizeRoles('Admin', 'Employee'),deleteUser);
+
+router.route('/edit-profile/:id')
+.put(upload.single("avatar"),updateProfile);
 // // router.route("/admin/newuser").post(newUser);
 
 // router.post("/admin/newuser",  upload.array('avatar', 10), newUser);
