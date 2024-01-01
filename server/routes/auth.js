@@ -16,63 +16,44 @@ const {
 
 
 const {
-    verifyToken,
-    registerUser,
-
-    loginUser,
-
-    logout,
-  //   googlelogin,
-
-
-  //   getUserProfile,
-
+  verifyToken,
+  registerUser,
+  loginUser,
+  logout,
   allUsers,
-
-    updateProfile,
-
+  allOwners,
+  updateProfile,
   getUserDetails,
-
   updateUser,
-
   deleteUser,
   newUser
 } = require("../controllers/userController");
 
-router.post("/verify-token",verifyToken);
+router.post("/verify-token", verifyToken);
 router
   .route("/admin/users")
-  .get(isAuthenticatedUser,authorizeRoles('Admin', 'Employee'),allUsers);
-router.post("/admin/user/new",isAuthenticatedUser,authorizeRoles('Admin', 'Employee'), upload.single("avatar"), newUser);
+  .get(isAuthenticatedUser, authorizeRoles('Admin', 'Employee'), allUsers);
+router.get("/admin/owners",isAuthenticatedUser, authorizeRoles('Admin'), allOwners);
+
+
+router.post("/admin/user/new", isAuthenticatedUser, authorizeRoles('Admin', 'Employee'), upload.single("avatar"), newUser);
 router.route('/admin/user/:id')
-  .get(isAuthenticatedUser,authorizeRoles('Admin', 'Employee'),getUserDetails)
-  .put(isAuthenticatedUser,authorizeRoles('Admin', 'Employee'),upload.single("avatar"),updateUser)
-  .delete(isAuthenticatedUser,authorizeRoles('Admin', 'Employee'),deleteUser);
+  .get(isAuthenticatedUser, authorizeRoles('Admin', 'Employee'), getUserDetails)
+  .put(isAuthenticatedUser, authorizeRoles('Admin', 'Employee'), upload.single("avatar"), updateUser)
+  .delete(isAuthenticatedUser, authorizeRoles('Admin', 'Employee'), deleteUser);
 
 router.route('/edit-profile/:id')
-.put(upload.single("avatar"),updateProfile);
-// // router.route("/admin/newuser").post(newUser);
+  .put(upload.single("avatar"), updateProfile);
 
-// router.post("/admin/newuser",  upload.array('avatar', 10), newUser);
-
-// router.put(
-//   "/me/update",
-//   isAuthenticatedUser,
-//   upload.single("avatar"),
-//   updateProfile
-// );
-
-
-// router.get("/me", isAuthenticatedUser, getUserProfile);
 
 router.post("/register", registerUser);
 
 router.post("/login", loginUser);
 
-// router.post("/googlelogin", googlelogin);
 
 
-router.get("/logout",logout);
+
+router.get("/logout", logout);
 
 
 

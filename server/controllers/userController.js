@@ -1,6 +1,3 @@
-
-
-
 const User = require("../models/User");
 const ErrorHandler = require("../utils/errorHandler");
 const sendToken = require("../utils/jwtToken");
@@ -31,6 +28,23 @@ exports.allUsers = async (req, res, next) => {
   });
 };
 
+exports.allOwners = async (req, res, next) => {
+  try {
+    const owners = await User.find({ role: 'Owner' });
+    res.status(200).json({
+      success: true,
+      owners,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      error: 'Internal Server Error',
+    });
+  }
+};
+
+
 
 
 
@@ -50,7 +64,7 @@ exports.newUser = async (req, res, next) => {
     if (!avatar) {
       return res.status(400).json({
         success: false,
-        message: 'Please Provide Avatar',
+        message: 'Please provide avatar',
       });
     }
 
@@ -124,6 +138,7 @@ exports.deleteUser = async (req, res, next) => {
 exports.getUserDetails = async (req, res, next) => {
   const user = await User.findById(req.params.id);
 
+
   if (!user) {
     return next(
       new ErrorHandler(`User does not found with id: ${req.params.id}`)
@@ -138,8 +153,7 @@ exports.getUserDetails = async (req, res, next) => {
 };
 
 exports.updateUser = async (req, res, next) => {
-  const { fname, lname, course, religion, role, email, password, storeId, storeName } = req.body;
-
+  const { fname, lname, course, religion, role, email, password, storeId, storeName} = req.body;
   try {
     const user = await User.findById(req.params.id);
     
