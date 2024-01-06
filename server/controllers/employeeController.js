@@ -26,6 +26,7 @@ exports.allEmployees = async (req, res, next) => {
 exports.newEmployee = async (req, res, next) => {
   const { fname, lname, course, religion, email, password, storeId, storeName } = req.body;
   const avatar = req?.file?.path;
+
   try {
     const existingUser = await User.findOne({ email });
 

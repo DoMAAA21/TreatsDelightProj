@@ -59,7 +59,7 @@ exports.newProduct = async (req, res, next) => {
         if (!req.files.firstImage) {
           return res.status(400).json({
             success: false,
-            message: 'Please Provide  Image at the Leftmost',
+            message: 'Please provide image at the leftmost',
           });
         }
         if (req.files.firstImage) {
@@ -235,10 +235,6 @@ exports.updateProduct = async (req, res, next) => {
       active,
       portion,
       images: imagePaths,
-      store: {
-        storeId,
-        name: storeName,
-      }
     };
 
     const product = await Product.findByIdAndUpdate(req.params.id, newProductData, {
