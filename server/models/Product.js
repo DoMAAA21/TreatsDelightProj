@@ -29,7 +29,7 @@ const productSchema = new mongoose.Schema({
 
     maxLength: [10, "Sell Price cannot exceed 10 characters"],
   },
-  portion:{
+  portion: {
     type: Boolean,
     default: false,
     required: true,
@@ -43,7 +43,7 @@ const productSchema = new mongoose.Schema({
 
     default: 0,
   },
-  images:[ {
+  images: [{
     index: {
       type: Number,
       required: true,
@@ -61,9 +61,9 @@ const productSchema = new mongoose.Schema({
     },
   }],
   category: {
-      type: String,
+    type: String,
 
-      required: false,
+    required: false,
   },
   store: {
     storeId: {
@@ -83,6 +83,38 @@ const productSchema = new mongoose.Schema({
     default: false,
     required: true,
   },
+  nutrition: {
+    calories: {
+      type: Number,
+      default: 0,
+      required: true,
+    },
+    protein: {
+      type: Number,
+      default: 0,
+      required: true,
+    },
+    carbs: {
+      type: Number,
+      default: 0,
+      required: true,
+    },
+    fiber: {
+      type: Number,
+      default: 0,
+      required: true,
+    },
+    sugar: {
+      type: Number,
+      default: 0,
+      required: true,
+    },
+    sodium: {
+      type: Number,
+      default: 0,
+      required: true,
+    },
+  }
 
 });
 
