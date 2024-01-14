@@ -45,6 +45,38 @@ exports.allItems = async (req, res, next) => {
   }
 };
 
+const PAGE_SIZE = 8;
+
+exports.allItemsWeb = async (req, res, next) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const startIndex = (page - 1) * PAGE_SIZE;
+
+    const totalProducts = await Product.countDocuments({ active: true });
+    const totalPages = Math.ceil(totalProducts / PAGE_SIZE);
+
+    const allProducts = await Product.find({ active: true })
+      .skip(startIndex)
+      .limit(PAGE_SIZE);
+
+    const hasMore = page < totalPages;
+    res.status(200).json({
+      success: true,
+      products: allProducts,
+      currentPage: page,
+      totalPages,
+      hasMore,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      error: 'Internal Server Error',
+    });
+  }
+};
+
+
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));

@@ -128,8 +128,12 @@ exports.updateEmployee = async (req, res, next) => {
       religion,
       role: 'Employee',
       email,
-      password
     };
+
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      newEmployeeData.password = hashedPassword;
+    }
 
 
     if (req.file && req.file.path !== null) {

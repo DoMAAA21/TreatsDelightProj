@@ -187,8 +187,7 @@ exports.updateUser = async (req, res, next) => {
     };
 
     if (password) {
-      // Hash the new password before updating
-      const hashedPassword = await bcrypt.hash(password, 10); // You can adjust the salt rounds as needed
+      const hashedPassword = await bcrypt.hash(password, 10);
       newUserData.password = hashedPassword;
     }
 

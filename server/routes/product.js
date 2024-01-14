@@ -11,7 +11,8 @@ const {
  updateProductStatus,
  allMeals,
  allItems,
- updateStocks
+ updateStocks,
+ allItemsWeb
 } = require("../controllers/productController");
 
 const {
@@ -25,6 +26,7 @@ const {
 router.get("/admin/store/:id/products",isAuthenticatedUser,authorizeRoles('Owner', 'Employee'),allProducts);
 router.get("/admin/store/:id/meals",isAuthenticatedUser,authorizeRoles('Owner', 'Employee'),allMeals);
 router.get("/allItems",allItems);
+router.get("/allItemsWeb",allItemsWeb);
 
 router.route('/admin/product/:id')
 .get(isAuthenticatedUser,authorizeRoles('Owner', 'Employee'),getProductDetails)
