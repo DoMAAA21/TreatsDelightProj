@@ -45,36 +45,79 @@ exports.allItems = async (req, res, next) => {
   }
 };
 
+
 const PAGE_SIZE = 8;
 
+
+
 exports.allItemsWeb = async (req, res, next) => {
+
   try {
+
     const page = parseInt(req.query.page) || 1;
     const startIndex = (page - 1) * PAGE_SIZE;
 
-    const totalProducts = await Product.countDocuments({ active: true });
+    let query = { active: true };
+    
+    if (req.query.searchQuery) {
+
+      const searchRegex = new RegExp(req.query.searchQuery, 'i');
+
+      const searchFields = ['name', 'category'];
+
+      const searchFilters = searchFields.map(field => ({
+        [field]: { $regex: searchRegex }  
+      }));
+
+      for (let field in Product.schema.obj) {
+        if (!['costPrice','sellPrice','stock','portion','active'].includes(field)) {
+          searchFilters.push({
+            [field]: { $eq: searchRegex }
+          });
+        }
+      }
+
+      query = {
+        $and: [
+          query,
+          {
+            $or: searchFilters   
+          }
+        ]
+      };
+
+    }
+
+    const totalProducts = await Product.countDocuments(query);
     const totalPages = Math.ceil(totalProducts / PAGE_SIZE);
 
-    const allProducts = await Product.find({ active: true })
-      .skip(startIndex)
+    const allProducts = await Product.find(query)
+      .skip(startIndex) 
       .limit(PAGE_SIZE);
 
-    const hasMore = page < totalPages;
+    const hasMore = page < totalPages;  
+
     res.status(200).json({
       success: true,
+      totalProducts,
       products: allProducts,
-      currentPage: page,
+      currentPage: page, 
       totalPages,
-      hasMore,
+      hasMore
     });
+
   } catch (error) {
+    
     console.error(error);
     res.status(500).json({
       success: false,
-      error: 'Internal Server Error',
+      error: 'Internal Server Error'
     });
+
   }
+
 };
+
 
 
 function shuffleArray(array) {
