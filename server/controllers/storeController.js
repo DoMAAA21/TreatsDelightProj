@@ -1,17 +1,29 @@
 const Store = require("../models/Store");
 const ErrorHandler = require("../utils/errorHandler");
 const sendToken = require("../utils/jwtToken");
-// const sendEmail = require("../utils/sendEmail");
 const cloudinary = require("cloudinary");
 
 exports.allStores = async (req, res, next) => {
-  const stores = await Store.find();
+  const stores = await Store.find({ deletedAt: { $eq: null } });;
 
   res.status(200).json({
     success: true,
 
     stores,
   });
+};
+
+exports.archivedStores = async (req, res, next) => {
+  try {
+    const deletedStores = await Store.find({ deletedAt: { $ne: null } });
+    res.status(200).json({
+      success: true,
+      stores: deletedStores,
+    });
+  } catch (error) {
+    console.error(error);
+    next(new ErrorHandler('Internal Server Error'));
+  }
 };
 
 
@@ -61,27 +73,38 @@ exports.newStore = async (req, res, next) => {
 
 
 exports.deleteStore = async (req, res, next) => {
-  const store = await Store.findById(req.params.id);
-
-
-  if (!store) {
-    return next(
-      new ErrorHandler(`Store not found with id: ${req.params.id}`)
-    );
+  try {
+    const store = await Store.findById(req.params.id);
+    if (!store) {
+      return next(new ErrorHandler(`Store not found with id: ${req.params.id}`));
+    }
+    store.deletedAt = new Date();
+    store.active = false;
+    await store.save();
+    res.status(200).json({
+      success: true,
+    });
+  } catch (error) {
+    console.error(error);
+    next(new ErrorHandler('Internal Server Error'));
   }
+};
 
-  // Remove avatar from cloudinary
-
-  const image_id = store.logo.public_id;
-
-  await cloudinary.v2.uploader.destroy(image_id);
-
-  await store.deleteOne();
-
-  res.status(200).json({
-    success: true,
-  });
-
+exports.restoreStore = async (req, res, next) => {
+  try {
+    const store = await Store.findById(req.params.id);
+    if (!store) {
+      return next(new ErrorHandler(`Store not found with id: ${req.params.id}`));
+    }
+    store.deletedAt = null;
+    await store.save();
+    res.status(200).json({
+      success: true,
+    });
+  } catch (error) {
+    console.error(error);
+    next(new ErrorHandler('Internal Server Error'));
+  }
 };
 
 exports.getStoreDetails = async (req, res, next) => {

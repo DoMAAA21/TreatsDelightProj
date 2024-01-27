@@ -41,6 +41,29 @@ const storeSchema = new mongoose.Schema({
 
     required: [true, "Please enter location"],
   },
+  rent: {
+    type: Number,
+
+    required: false,
+  },
+  rent: {
+    type: Number,
+
+    required: false,
+  },
+  water: {
+    type: Number,
+
+    required: false,
+  },
+  electricity: {
+    type: Number,
+    required: false,
+  },
+  deletedAt: {
+    type: Date,
+    default: null
+  },
   active: {
     type: Boolean,
     default: false,
