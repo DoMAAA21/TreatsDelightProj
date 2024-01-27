@@ -7,6 +7,7 @@ const product = require("./routes/product");
 const employee = require("./routes/employee");
 const order = require("./routes/order");
 const chart = require("./routes/chart");
+const rent = require("./routes/rent");
 
 
 const cors = require('cors');
