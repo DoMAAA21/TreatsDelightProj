@@ -28,6 +28,7 @@ app.use("/api/v1", product);
 app.use("/api/v1", employee);
 app.use("/api/v1", order);
 app.use("/api/v1", chart);
+app.use("/api/v1", rent);
 
 app.use(errorMiddleware);
 

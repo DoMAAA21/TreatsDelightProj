@@ -20,7 +20,7 @@ const rentSchema = new mongoose.Schema({
     },
     paymentType: {
         type: String,
-        required: [true, "Please enter payment type"],
+        required: false,
         default: "Cash",
 
     },
@@ -30,7 +30,12 @@ const rentSchema = new mongoose.Schema({
     },
     paidAt: {
         type: Date,
-        default: null
+        default: null,
+        allowNull: true,
+    },
+    issuedAt: {
+        type: Date,
+        default: Date.now
     },
     deletedAt: {
         type: Date,
