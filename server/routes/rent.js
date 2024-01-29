@@ -1,4 +1,3 @@
-const upload = require("../utils/multer");
 const express = require("express");
 const router = express.Router();
 

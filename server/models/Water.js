@@ -1,12 +1,12 @@
 const mongoose = require("mongoose");
 
-const rentSchema = new mongoose.Schema({
+const waterSchema = new mongoose.Schema({
     storeId: {
         type: mongoose.Schema.Types.ObjectId,
         required: false,
         ref: 'Store'
     },
-    consumed: {
+    total: {
         type: Number,
         required: [true, "Please enter consumed"],
         default: 0,
@@ -21,7 +21,7 @@ const rentSchema = new mongoose.Schema({
         type: Number,
         default: 0,
     },
-    amount: {
+    consumed: {
         type: Number,
         required: [true, "Please enter amount"],
         default: 0,
@@ -63,6 +63,5 @@ const rentSchema = new mongoose.Schema({
 
 });
 
-module.exports = mongoose.model("Rent", rentSchema);
-
+module.exports = mongoose.model("Water", waterSchema);
 
