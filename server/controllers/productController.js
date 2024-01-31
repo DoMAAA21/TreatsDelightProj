@@ -26,6 +26,18 @@ exports.allMeals = async (req, res, next) => {
 
     products,
   });
+
+};
+
+exports.allStoreItems = async (req, res, next) => {
+  const storeId = req.params.id;
+  const products = await Product.find({ $and: [{ 'store.storeId': storeId }] });
+
+  res.status(200).json({
+    success: true,
+
+    products,
+  });
 };
 
 exports.allItems = async (req, res, next) => {
