@@ -83,6 +83,11 @@ const productSchema = new mongoose.Schema({
     default: false,
     required: true,
   },
+  halal:{
+    type: Boolean,
+    default: true,
+    required: true,
+  },
   nutrition: {
     calories: {
       type: Number,

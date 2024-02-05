@@ -1,6 +1,9 @@
 const Product = require("../models/Product");
+const User = require("../models/User");
 const ErrorHandler = require("../utils/errorHandler");
 const cloudinary = require("cloudinary");
+const jwt = require('jsonwebtoken');
+
 exports.allProducts = async (req, res, next) => {
   const storeId = req.params.id;
   const products = await Product.find({
@@ -58,31 +61,40 @@ exports.allItems = async (req, res, next) => {
 };
 
 
+
+
 const PAGE_SIZE = 8;
 
 
 
 exports.allItemsWeb = async (req, res, next) => {
-
   try {
+    const token = req.cookies?.token;
+    let isMuslim = false;
+
+    if (token) {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      req.user = await User.findById(decoded.id);
+      if (req.user.religion.toLowerCase() === "muslim") {
+        isMuslim = true;
+      }
+    }
 
     const page = parseInt(req.query.page) || 1;
     const startIndex = (page - 1) * PAGE_SIZE;
 
     let query = { active: true };
-    
+
     if (req.query.searchQuery) {
-
       const searchRegex = new RegExp(req.query.searchQuery, 'i');
-
       const searchFields = ['name', 'category'];
 
       const searchFilters = searchFields.map(field => ({
-        [field]: { $regex: searchRegex }  
+        [field]: { $regex: searchRegex }
       }));
 
       for (let field in Product.schema.obj) {
-        if (!['costPrice','sellPrice','stock','portion','active'].includes(field)) {
+        if (!['costPrice', 'sellPrice', 'stock', 'portion', 'active'].includes(field)) {
           searchFilters.push({
             [field]: { $eq: searchRegex }
           });
@@ -93,42 +105,43 @@ exports.allItemsWeb = async (req, res, next) => {
         $and: [
           query,
           {
-            $or: searchFilters   
+            $or: searchFilters
           }
         ]
       };
+    }
 
+
+    if (isMuslim) {
+      query.halal = { $ne: false };
     }
 
     const totalProducts = await Product.countDocuments(query);
     const totalPages = Math.ceil(totalProducts / PAGE_SIZE);
 
     const allProducts = await Product.find(query)
-      .skip(startIndex) 
+      .skip(startIndex)
       .limit(PAGE_SIZE);
 
-    const hasMore = page < totalPages;  
+    const hasMore = page < totalPages;
 
     res.status(200).json({
       success: true,
       totalProducts,
       products: allProducts,
-      currentPage: page, 
+      currentPage: page,
       totalPages,
       hasMore
     });
-
   } catch (error) {
-    
     console.error(error);
     res.status(500).json({
       success: false,
       error: 'Internal Server Error'
     });
-
   }
-
 };
+
 
 
 
@@ -142,7 +155,8 @@ function shuffleArray(array) {
 
 exports.newProduct = async (req, res, next) => {
   const { name, description, costPrice, sellPrice, stock, portion, category,
-    calories, protein, carbs, fat, fiber, sugar, sodium, active, storeId, storeName } = req.body;
+    calories, protein, carbs, fat, fiber, sugar, sodium, active, halal, storeId, storeName } = req.body;
+
   try {
     const imagePaths = [];
     if (!req.files.firstImage) {
@@ -194,6 +208,7 @@ exports.newProduct = async (req, res, next) => {
       stock,
       category,
       active,
+      halal,
       images: imagePaths,
       store: {
         storeId: storeId,
@@ -275,7 +290,7 @@ exports.getProductDetails = async (req, res, next) => {
 
 exports.updateProduct = async (req, res, next) => {
   const { name, description, costPrice, sellPrice, stock, portion, category, active,
-    calories, protein, carbs, fat, fiber, sugar, sodium,
+    calories, protein, carbs, fat, fiber, sugar, sodium, halal,
   } = req.body;
   try {
     const existingProduct = await Product.findById(req.params.id);
@@ -333,6 +348,7 @@ exports.updateProduct = async (req, res, next) => {
       stock,
       category,
       active,
+      halal,
       portion,
       nutrition: {
         calories,
