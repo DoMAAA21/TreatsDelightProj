@@ -119,6 +119,11 @@ const productSchema = new mongoose.Schema({
       default: 0,
       required: true,
     },
+    cholesterol: {
+      type: Number,
+      default: 0,
+      required: true,
+    },
   }
 
 });

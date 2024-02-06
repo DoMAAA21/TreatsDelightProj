@@ -155,7 +155,7 @@ function shuffleArray(array) {
 
 exports.newProduct = async (req, res, next) => {
   const { name, description, costPrice, sellPrice, stock, portion, category,
-    calories, protein, carbs, fat, fiber, sugar, sodium, active, halal, storeId, storeName } = req.body;
+    calories, protein, carbs, fat, fiber, sugar, sodium, cholesterol, active, halal, storeId, storeName } = req.body;
 
   try {
     const imagePaths = [];
@@ -221,7 +221,8 @@ exports.newProduct = async (req, res, next) => {
         fat,
         fiber,
         sugar,
-        sodium
+        sodium,
+        cholesterol
       }
 
     });
@@ -290,7 +291,7 @@ exports.getProductDetails = async (req, res, next) => {
 
 exports.updateProduct = async (req, res, next) => {
   const { name, description, costPrice, sellPrice, stock, portion, category, active,
-    calories, protein, carbs, fat, fiber, sugar, sodium, halal,
+    calories, protein, carbs, fat, fiber, sugar, sodium, cholesterol, halal,
   } = req.body;
   try {
     const existingProduct = await Product.findById(req.params.id);
@@ -357,7 +358,8 @@ exports.updateProduct = async (req, res, next) => {
         fat,
         fiber,
         sugar,
-        sodium
+        sodium,
+        cholesterol
       },
       images: imagePaths,
     };
