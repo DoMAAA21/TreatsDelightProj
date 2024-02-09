@@ -45,7 +45,24 @@ exports.allStoreItems = async (req, res, next) => {
 
 exports.allItems = async (req, res, next) => {
   try {
-    const allProducts = await Product.find({ active: true });
+    const token = req.headers?.authorization;
+    let isMuslim = false;
+
+    if (token) {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      req.user = await User.findById(decoded.id);
+      if (req.user.religion.toLowerCase() === "muslim") {
+        isMuslim = true;
+      }
+    }
+
+    const query = { active: true };
+
+    if (isMuslim) {
+      query.halal = { $ne: false }; // Exclude products with halal: false
+    }
+
+    const allProducts = await Product.find(query);
     const shuffledProducts = shuffleArray(allProducts);
     res.status(200).json({
       success: true,
@@ -63,6 +80,7 @@ exports.allItems = async (req, res, next) => {
 
 
 
+
 const PAGE_SIZE = 8;
 
 
@@ -71,6 +89,10 @@ exports.allItemsWeb = async (req, res, next) => {
   try {
     const token = req.cookies?.token;
     let isMuslim = false;
+
+    if (req.query.searchQuery && /[^a-zA-Z0-9]/.test(req.query.searchQuery)) {
+      return;
+    }
 
     if (token) {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -85,21 +107,17 @@ exports.allItemsWeb = async (req, res, next) => {
 
     let query = { active: true };
 
+    if (req.query.category) {
+      query.category = req.query.category; 
+    }
+
     if (req.query.searchQuery) {
       const searchRegex = new RegExp(req.query.searchQuery, 'i');
-      const searchFields = ['name', 'category'];
+      const searchFields = ['name','store.name']; // Exclude category from search fields as it's handled separately
 
       const searchFilters = searchFields.map(field => ({
         [field]: { $regex: searchRegex }
       }));
-
-      for (let field in Product.schema.obj) {
-        if (!['costPrice', 'sellPrice', 'stock', 'portion', 'active'].includes(field)) {
-          searchFilters.push({
-            [field]: { $eq: searchRegex }
-          });
-        }
-      }
 
       query = {
         $and: [
@@ -110,7 +128,6 @@ exports.allItemsWeb = async (req, res, next) => {
         ]
       };
     }
-
 
     if (isMuslim) {
       query.halal = { $ne: false };

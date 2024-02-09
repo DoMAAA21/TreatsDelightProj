@@ -104,6 +104,11 @@ const productSchema = new mongoose.Schema({
       default: 0,
       required: true,
     },
+    fat: {
+      type: Number,
+      default: 0,
+      required: true,
+    },
     fiber: {
       type: Number,
       default: 0,
