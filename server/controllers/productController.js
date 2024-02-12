@@ -63,10 +63,10 @@ exports.allItems = async (req, res, next) => {
     }
 
     const allProducts = await Product.find(query);
-    const shuffledProducts = shuffleArray(allProducts);
+    // const shuffledProducts = shuffleArray(allProducts);
     res.status(200).json({
       success: true,
-      products: shuffledProducts,
+      products: allProducts,
     });
   } catch (error) {
     console.error(error);

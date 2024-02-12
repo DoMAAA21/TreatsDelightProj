@@ -1,6 +1,4 @@
 const Order = require('../models/Order');
-const qr = require('qrcode');
-
 exports.newOrder = async (req, res, next) => {
     const {
         orderItems,
@@ -8,6 +6,8 @@ exports.newOrder = async (req, res, next) => {
         user,
         isReserve
     } = req.body;
+
+    console.log(isReserve);
     const order = await Order.create({
         orderItems,
         totalPrice,
@@ -19,7 +19,7 @@ exports.newOrder = async (req, res, next) => {
     })
     let qrCodeURL;
     if(isReserve){
-        qrCodeURL = await qr.toDataURL(order._id.toString());
+        qrCodeURL = order._id.toString();
     }else{
         qrCodeURL = null;
     }
