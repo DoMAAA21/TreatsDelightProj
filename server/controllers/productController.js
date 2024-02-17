@@ -111,9 +111,13 @@ exports.allItemsWeb = async (req, res, next) => {
       query.category = req.query.category; 
     }
 
+    if (req.query.store) {
+      query['store.name'] = req.query.store; // Adding the store filter
+    }
+
     if (req.query.searchQuery) {
       const searchRegex = new RegExp(req.query.searchQuery, 'i');
-      const searchFields = ['name','store.name']; // Exclude category from search fields as it's handled separately
+      const searchFields = ['name', 'store.name'];
 
       const searchFilters = searchFields.map(field => ({
         [field]: { $regex: searchRegex }
@@ -158,6 +162,7 @@ exports.allItemsWeb = async (req, res, next) => {
     });
   }
 };
+
 
 
 

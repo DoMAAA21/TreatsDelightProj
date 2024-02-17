@@ -32,7 +32,7 @@ const {
 router.post("/verify-token", verifyToken);
 router
   .route("/admin/users")
-  .get(isAuthenticatedUser, authorizeRoles('Admin', 'Employee'), allUsers);
+  .get(isAuthenticatedUser, authorizeRoles('Admin', 'Employee', 'Owner'), allUsers);
 router.get("/admin/owners",isAuthenticatedUser, authorizeRoles('Admin'), allOwners);
 
 

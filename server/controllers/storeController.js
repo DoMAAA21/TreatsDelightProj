@@ -1,6 +1,6 @@
 const Store = require("../models/Store");
+const User = require("../models/User");
 const ErrorHandler = require("../utils/errorHandler");
-const sendToken = require("../utils/jwtToken");
 const cloudinary = require("cloudinary");
 
 exports.allStores = async (req, res, next) => {
@@ -71,16 +71,19 @@ exports.newStore = async (req, res, next) => {
 };
 
 
-
 exports.deleteStore = async (req, res, next) => {
   try {
     const store = await Store.findById(req.params.id);
     if (!store) {
       return next(new ErrorHandler(`Store not found with id: ${req.params.id}`));
     }
+    await User.deleteMany({ 'store.storeId': store._id });
+
+    // Soft delete the store
     store.deletedAt = new Date();
     store.active = false;
     await store.save();
+
     res.status(200).json({
       success: true,
     });
@@ -89,6 +92,7 @@ exports.deleteStore = async (req, res, next) => {
     next(new ErrorHandler('Internal Server Error'));
   }
 };
+
 
 exports.restoreStore = async (req, res, next) => {
   try {

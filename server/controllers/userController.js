@@ -153,6 +153,7 @@ exports.getUserDetails = async (req, res, next) => {
 };
 
 exports.updateUser = async (req, res, next) => {
+
   const { fname, lname, course, religion, role, email, password, storeId, storeName} = req.body;
   try {
     const user = await User.findById(req.params.id);
@@ -183,7 +184,7 @@ exports.updateUser = async (req, res, next) => {
       religion,
       role,
       email,
-      store: (role === 'Employee' && storeId && storeName) ? { storeId, name: storeName } : null
+      store: ((role === 'Employee' || role === 'Owner') && storeId && storeName) ? { storeId, name: storeName } : null
     };
 
     if (password) {

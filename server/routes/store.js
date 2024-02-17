@@ -26,7 +26,7 @@ router
   .route("/admin/stores/archived")
   .get(isAuthenticatedUser,authorizeRoles('Admin', 'Employee'),archivedStores);
 router.route('/admin/store/:id')
-  .get(isAuthenticatedUser,authorizeRoles('Admin', 'Employee'),getStoreDetails)
+  .get(isAuthenticatedUser,authorizeRoles('Admin', 'Employee','Owner'),getStoreDetails)
   .put(isAuthenticatedUser,authorizeRoles('Admin', 'Employee'),upload.single("logo"), updateStore)
   .delete(isAuthenticatedUser,authorizeRoles('Admin', 'Employee'),deleteStore);
 router.post("/admin/store/new",isAuthenticatedUser,authorizeRoles('Admin', 'Employee'), upload.single("logo"), newStore);
