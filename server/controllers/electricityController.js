@@ -32,7 +32,7 @@ exports.archivedElectricity = async (req, res, next) => {
 };
 
 exports.newElectricity = async (req, res, next) => {
-  const { total, additionals, consumed, price, type, note, storeId, issueAt, paidAt } = req.body;
+  const { total, additionals, consumed, price, type, note, storeId, issuedAt, paidAt } = req.body;
   try {
     const paidDate = (type === "paid") ? paidAt : null;
     const electricityAmt = (type === "paid") ? total : -total;
@@ -44,7 +44,7 @@ exports.newElectricity = async (req, res, next) => {
       price,
       type,
       note,
-      issueAt,
+      issuedAt,
       paidAt: paidDate
     });
 
