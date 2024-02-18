@@ -32,7 +32,7 @@ exports.archivedRents = async (req, res, next) => {
 };
 
 exports.newRent = async (req, res, next) => {
-  const { amount, type, note, storeId, issueAt, paidAt } = req.body;
+  const { amount, type, note, storeId, issuedAt, paidAt } = req.body;
   try {
     const paidDate = (type === "paid") ? paidAt : null;
     const rentAmt = (type === "paid") ? amount : -amount;
@@ -41,7 +41,7 @@ exports.newRent = async (req, res, next) => {
       amount: rentAmt,
       type,
       note,
-      issueAt,
+      issuedAt,
       paidAt: paidDate
     });
 

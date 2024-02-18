@@ -32,7 +32,7 @@ exports.archivedWaters = async (req, res, next) => {
 };
 
 exports.newWater = async (req, res, next) => {
-  const { total, additionals, consumed, price, type, note, storeId, issueAt, paidAt } = req.body;
+  const { total, additionals, consumed, price, type, note, storeId, issuedAt, paidAt } = req.body;
   try {
     const paidDate = (type === "paid") ? paidAt : null;
     const waterAmt = (type === "paid") ? total : -total;
@@ -44,7 +44,7 @@ exports.newWater = async (req, res, next) => {
       price,
       type,
       note,
-      issueAt,
+      issuedAt,
       paidAt: paidDate
     });
 
