@@ -60,6 +60,10 @@ const storeSchema = new mongoose.Schema({
     type: Number,
     required: false,
   },
+  maintenance: {
+    type: Number,
+    required: false,
+  },
   deletedAt: {
     type: Date,
     default: null
