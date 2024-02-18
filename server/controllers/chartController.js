@@ -2,6 +2,7 @@ const Order = require('../models/Order');
 const mongoose = require("mongoose");
 const Electricity = require('../models/Electricity');
 const Water = require('../models/Water');
+const Rent = require('../models/Rent');
 const { ObjectId } = mongoose.Types;
 
 exports.ordersPerMonth = async (req, res, next) => {
@@ -186,6 +187,49 @@ exports.waterBillPerMonth = async (req, res, next) => {
                       month: { $month: '$issuedAt' } // Extract month
                   },
                   totalBill: { $sum: '$total' },
+              },
+          },
+          {
+              $project: {
+                  _id: 0,
+                  year: '$_id.year', // Project year
+                  month: '$_id.month', // Project month
+                  totalBill: 1
+              }
+          },
+          {
+              $sort: { 
+                  year: 1,
+                  month: 1
+              }
+          }
+      ]);
+
+      res.json(billData);
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
+exports.rentBillPerMonth = async (req, res, next) => {
+  const { id } = req.params;
+  const storeId = new ObjectId(id);
+  try {
+      const billData = await Rent.aggregate([
+          {
+              $match: {
+                  storeId: storeId,
+                  deletedAt: null
+              }
+          },
+          {
+              $group: {
+                  _id: {
+                      year: { $year: '$issuedAt' }, // Extract year
+                      month: { $month: '$issuedAt' } // Extract month
+                  },
+                  totalBill: { $sum: '$amount' },
               },
           },
           {
