@@ -32,7 +32,7 @@ exports.archivedMaintenances = async (req, res, next) => {
 };
 
 exports.newMaintenance = async (req, res, next) => {
-  const { amount, type, note, storeId, issuedAt, paidAt } = req.body;
+  const { amount, type, note, storeId, issuedAt, paidAt, cateredBy } = req.body;
   try {
     const paidDate = (type === "paid") ? paidAt : null;
     const maintenanceAmt = (type === "paid") ? amount : -amount;
@@ -42,6 +42,7 @@ exports.newMaintenance = async (req, res, next) => {
       type,
       note,
       issuedAt,
+      cateredBy,
       paidAt: paidDate
     });
 
@@ -53,8 +54,9 @@ exports.newMaintenance = async (req, res, next) => {
         message: 'Store not found.',
       });
     }
-    store.maintenance = (store.maintenance ?? 0) + ((type === "paid") ? amount : -amount);
-
+    if(cateredBy.toLowerCase()==="store"){
+      store.maintenance = (store.maintenance ?? 0) + ((type === "paid") ? amount : -amount);
+    }
     await store.save();
 
     res.status(201).json({
