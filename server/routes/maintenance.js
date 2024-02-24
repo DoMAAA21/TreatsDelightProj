@@ -24,8 +24,8 @@ router
   .get(isAuthenticatedUser, authorizeRoles('Admin', 'Employee'), archivedMaintenances);
 
 router.route('/admin/maintenance/:id').delete(isAuthenticatedUser, authorizeRoles('Admin', 'Employee'), deleteMaintenance);
-router.route('/admin/maintenance/restore/:id')
-  .get(isAuthenticatedUser,authorizeRoles('Admin', 'Employee'),restoreMaintenance)
+router.route('/admin/maintenance/restore')
+  .put(isAuthenticatedUser,authorizeRoles('Admin', 'Employee'),restoreMaintenance)
 
 
 

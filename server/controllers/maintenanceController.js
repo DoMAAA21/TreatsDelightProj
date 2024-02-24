@@ -91,9 +91,10 @@ exports.deleteMaintenance = async (req, res, next) => {
 
 exports.restoreMaintenance = async (req, res, next) => {
   try {
-    const maintenance = await Maintenance.findById(req.params.id);
+    const { id } = req.body;
+    const maintenance = await Maintenance.findById(id);
     if (!maintenance) {
-      return next(new ErrorHandler(`Maintenance not found with id: ${req.params.id}`));
+      return next(new ErrorHandler(`Maintenance not found with id: ${id}`));
     }
     maintenance.deletedAt = null;
     await maintenance.save();

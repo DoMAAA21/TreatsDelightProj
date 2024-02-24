@@ -14,6 +14,8 @@ const {
   authorizeRoles,
 } = require("../middlewares/auth");
 
+router.route('/admin/rent/restore')
+  .put(isAuthenticatedUser,authorizeRoles('Admin', 'Employee'),restoreRent);
 router.post("/admin/rent/new", isAuthenticatedUser, authorizeRoles('Admin', 'Employee'), newRent);
 router
   .route("/admin/rent/store/:id")
@@ -24,8 +26,7 @@ router
   .get(isAuthenticatedUser, authorizeRoles('Admin', 'Employee'), archivedRents);
 
 router.route('/admin/rent/:id').delete(isAuthenticatedUser, authorizeRoles('Admin', 'Employee'), deleteRent);
-router.route('/admin/rent/restore/:id')
-  .get(isAuthenticatedUser,authorizeRoles('Admin', 'Employee'),restoreRent)
+
 
 
 

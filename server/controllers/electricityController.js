@@ -92,9 +92,10 @@ exports.deleteElectricity = async (req, res, next) => {
 
 exports.restoreElectricity = async (req, res, next) => {
   try {
-    const electricity = await Electricity.findById(req.params.id);
+    const { id } = req.body
+    const electricity = await Electricity.findById(id);
     if (!electricity) {
-      return next(new ErrorHandler(`Electricity not found with id: ${req.params.id}`));
+      return next(new ErrorHandler(`Electricity not found with id: ${id}`));
     }
     electricity.deletedAt = null;
     await electricity.save();

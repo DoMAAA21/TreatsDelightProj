@@ -79,7 +79,7 @@ exports.deleteRent = async (req, res, next) => {
     rent.deletedAt = new Date();
     await rent.save();
     res.status(200).json({
-    success: true,
+      success: true,
     });
   } catch (error) {
     console.error(error);
@@ -89,9 +89,10 @@ exports.deleteRent = async (req, res, next) => {
 
 exports.restoreRent = async (req, res, next) => {
   try {
-    const rent = await Rent.findById(req.params.id);
+    const { id } = req.body
+    const rent = await Rent.findById(id);
     if (!rent) {
-      return next(new ErrorHandler(`Rent not found with id: ${req.params.id}`));
+      return next(new ErrorHandler(`Rent not found with id: ${id}`));
     }
     rent.deletedAt = null;
     await rent.save();
@@ -103,28 +104,4 @@ exports.restoreRent = async (req, res, next) => {
     next(new ErrorHandler('Internal Server Error'));
   }
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

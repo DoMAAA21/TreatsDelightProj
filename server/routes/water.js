@@ -24,8 +24,8 @@ router
   .get(isAuthenticatedUser, authorizeRoles('Admin', 'Employee'), archivedWaters);
 
 router.route('/admin/water/:id').delete(isAuthenticatedUser, authorizeRoles('Admin', 'Employee'), deleteWater);
-router.route('/admin/water/restore/:id')
-  .get(isAuthenticatedUser,authorizeRoles('Admin', 'Employee'),restoreWater)
+router.route('/admin/water/restore')
+  .put(isAuthenticatedUser,authorizeRoles('Admin', 'Employee'),restoreWater)
 
 
 

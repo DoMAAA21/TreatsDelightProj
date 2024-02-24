@@ -92,9 +92,10 @@ exports.deleteWater = async (req, res, next) => {
 
 exports.restoreWater = async (req, res, next) => {
   try {
-    const water = await Water.findById(req.params.id);
+    const { id } = req.body
+    const water = await Water.findById(id);
     if (!water) {
-      return next(new ErrorHandler(`Water not found with id: ${req.params.id}`));
+      return next(new ErrorHandler(`Water not found with id: ${id}`));
     }
     water.deletedAt = null;
     await water.save();
