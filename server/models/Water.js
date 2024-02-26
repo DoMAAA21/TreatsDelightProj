@@ -8,7 +8,7 @@ const waterSchema = new mongoose.Schema({
     },
     total: {
         type: Number,
-        required: [true, "Please enter consumed"],
+        required: [true, "Please enter total"],
         default: 0,
     },
     price: {

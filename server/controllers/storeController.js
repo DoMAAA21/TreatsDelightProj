@@ -1,4 +1,5 @@
 const Store = require("../models/Store");
+const Product = require("../models/Product");
 const User = require("../models/User");
 const ErrorHandler = require("../utils/errorHandler");
 const cloudinary = require("cloudinary");
@@ -128,45 +129,55 @@ exports.getStoreDetails = async (req, res, next) => {
 };
 
 exports.updateStore = async (req, res, next) => {
-  console.log(req.body)
-  const newStoreData = {
-    name: req.body.name,
-    slogan: req.body.slogan,
-    stall: req.body.stall,
-    location: req.body.location,
-    active: req.body.active,
-  };
- 
-
-  if (req.file && req.file.path !== null) {
-    const store = await Store.findById(req.params.id);
-    const image_id = store.logo.public_id;
-    const res = await cloudinary.uploader.destroy(image_id);
-    const result = await cloudinary.v2.uploader.upload(req.file.path,{
-        folder: "stores",
-    });
-    newStoreData.logo = {
-      public_id: result.public_id,
-      url: result.secure_url,
+  try {
+    const newStoreData = {
+      name: req.body.name,
+      slogan: req.body.slogan,
+      stall: req.body.stall,
+      location: req.body.location,
+      active: req.body.active,
     };
+
+    if (req.file && req.file.path !== null) {
+      const store = await Store.findById(req.params.id);
+      const image_id = store.logo.public_id;
+      const res = await cloudinary.uploader.destroy(image_id);
+      const result = await cloudinary.v2.uploader.upload(req.file.path, {
+        folder: "stores",
+      });
+      newStoreData.logo = {
+        public_id: result.public_id,
+        url: result.secure_url,
+      };
+    }
+    const store = await Store.findByIdAndUpdate(req.params.id, newStoreData, {
+      new: true,
+      runValidators: true,
+      useFindAndModify: false
+    });
+
+    // Update products associated with the store
+    await Product.updateMany(
+      { "store.storeId": store._id },
+      { "store.name": store.name }
+    );
+
+    await User.updateMany(
+      { "store.storeId": store._id },
+      { "store.name": store.name }
+    );
+
+    res.status(200).json({
+      success: true,
+      store
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
-
-
-  const store = await Store.findByIdAndUpdate(req.params.id, newStoreData, {
-    new: true,
-
-    runValidators: true,
-
-    useFindAndModify: false
-  });
-
-  
-  res.status(200).json({
-    success: true,
-    store
-  });
-  console.log(res)
 };
+
 
 
 exports.updateStoreStatus = async (req, res, next) => {

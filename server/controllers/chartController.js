@@ -313,6 +313,134 @@ exports.storeProductsSold = async (req, res, next) => {
   }
 };
 
+exports.topStores = async (req, res, next) => {
+  try {
+    const topStores = await Order.aggregate([
+      {
+        $unwind: '$orderItems', 
+      },
+      {
+        $group: {
+          _id: '$orderItems.storeId', 
+          totalProductsSold: { $sum: '$orderItems.quantity' },
+        },
+      },
+      {
+        $lookup: { 
+          from: 'stores',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'store'
+        }
+      },
+      {
+        $match: {
+          'store.deletedAt': null
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          label: { $arrayElemAt: ['$store.name', 0] },
+          value: '$totalProductsSold',
+        },
+      },
+      {
+        $sort: {
+          value: -1,
+        },
+      },
+    ]);
+
+    res.json(topStores);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
+
+
+exports.storeSalesCurrentMonth = async (req, res, next) => {
+  try {
+    const { id } = req.params; 
+    const storeId = new ObjectId(id);
+    const startDate = new Date();
+    startDate.setDate(1); 
+    startDate.setHours(0, 0, 0, 0); 
+
+    const endDate = new Date();
+    endDate.setHours(23, 59, 59, 999); 
+    const storeSalesCurrentMonth = await Order.aggregate([
+      {
+        $match: {
+          'orderItems.storeId': storeId, 
+          'createdAt': { $gte: startDate, $lte: endDate }, 
+          'store.deletedAt': null
+        }
+      },
+      {
+        $unwind: '$orderItems'
+      },
+      {
+        $group: {
+          _id: null,
+          totalRevenue: { $sum: { $multiply: ['$orderItems.quantity', '$orderItems.price'] } } // Calculate total revenue
+        }
+      }
+    ]);
+
+    res.json(storeSalesCurrentMonth[0] ? storeSalesCurrentMonth[0].totalRevenue : 0);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
+exports.storeSalesCurrentDay = async (req, res, next) => {
+  try {
+    const { id } = req.params; 
+    const storeId = new ObjectId(id);
+    
+    // Get the start and end of the current date
+    const currentDate = new Date();
+    const startDate = new Date(currentDate);
+    startDate.setHours(0, 0, 0, 0); // Set time to beginning of the day
+
+    const endDate = new Date(currentDate);
+    endDate.setHours(23, 59, 59, 999); // Set time to end of the day
+    
+    const storeSalesCurrentDate = await Order.aggregate([
+      {
+        $match: {
+          'orderItems.storeId': storeId, 
+          'createdAt': { $gte: startDate, $lte: endDate }, 
+          'store.deletedAt': null
+        }
+      },
+      {
+        $unwind: '$orderItems'
+      },
+      {
+        $group: {
+          _id: null,
+          totalRevenue: { $sum: { $multiply: ['$orderItems.quantity', '$orderItems.price'] } } // Calculate total revenue
+        }
+      }
+    ]);
+
+    res.json(storeSalesCurrentDate[0] ? storeSalesCurrentDate[0].totalRevenue : 0);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
+
+
+
+
+
 
 
 
