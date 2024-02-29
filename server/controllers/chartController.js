@@ -150,7 +150,7 @@ exports.electricityBillPerMonth = async (req, res, next) => {
           _id: 0,
           year: '$_id.year', // Project year
           month: '$_id.month', // Project month
-          totalBill: 1
+          totalBill: { $abs: '$totalBill' }
         }
       },
       {
@@ -194,7 +194,7 @@ exports.waterBillPerMonth = async (req, res, next) => {
           _id: 0,
           year: '$_id.year', // Project year
           month: '$_id.month', // Project month
-          totalBill: 1
+          totalBill: { $abs: '$totalBill' }
         }
       },
       {
@@ -237,7 +237,7 @@ exports.rentBillPerMonth = async (req, res, next) => {
           _id: 0,
           year: '$_id.year', // Project year
           month: '$_id.month', // Project month
-          totalBill: 1
+          totalBill: { $abs: '$totalBill' }
         }
       },
       {
