@@ -260,6 +260,60 @@ exports.updatePermit = async (req, res, next) => {
 };
 
 
+exports.updateContract = async (req, res, next) => {
+  try {
+   
+    const { storeId, startedAt, expiration } = req.body;
+    const oldStoreData = await Store.findById(storeId);
+    const existingContract = oldStoreData.contract;
+  
+    const contractData = {
+      contract:{
+        ...existingContract,
+        startedAt,
+        expiration
+      }
+    };
+
+
+    if (req.file && req.file.path !== null) {
+      const store = await Store.findById(storeId);
+      if(store.contract.public_id){
+        const image_id = store.contract.public_id;
+        await cloudinary.uploader.destroy(image_id);
+      }
+
+      const today = new Date();
+      const formattedDate = `${today.getFullYear()}-${(today.getMonth() + 1).toString().padStart(2, '0')}-${today.getDate().toString().padStart(2, '0')}`;
+      const result = await cloudinary.v2.uploader.upload(req.file.path, {
+        folder: "stores",
+        public_id: `${oldStoreData.name}_${formattedDate}`
+      });
+      contractData.contract = {
+        ...contractData.contract,
+        public_id: result.public_id,
+        url: result.secure_url,
+      };
+    }
+
+    const store = await Store.findByIdAndUpdate(storeId, contractData, {
+      new: true,
+      runValidators: true,
+      useFindAndModify: false
+    });
+
+    res.status(200).json({
+      success: true,
+      store
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
+
 
 
 

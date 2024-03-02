@@ -88,6 +88,26 @@ const storeSchema = new mongoose.Schema({
       default: null
     }
   },
+  contract: {
+    public_id: {
+      type: String,
+
+      required: false,
+    },
+    url: {
+      type: String,
+
+      required: false,
+    },
+    startedAt: {
+      type: Date,
+      default: null
+    },
+    expiration: {
+      type: Date,
+      default: null
+    }
+  },
 
   active: {
     type: Boolean,

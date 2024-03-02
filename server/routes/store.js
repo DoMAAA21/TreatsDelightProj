@@ -1,4 +1,5 @@
 const upload = require("../utils/multer");
+const pdfupload = require("../utils/pdfMulter");
 const express = require("express");
 const router = express.Router();
 
@@ -11,7 +12,8 @@ const {
   restoreStore,
   newStore,
   updateStoreStatus,
-  updatePermit
+  updatePermit,
+  updateContract
 } = require("../controllers/storeController");
 
 const {
@@ -20,7 +22,7 @@ const {
   authorizeRoles,
 } = require("../middlewares/auth");
 
-router.route('/admin/update-permit').patch(upload.single("image"),updatePermit);
+
 router
   .route("/admin/stores")
   .get(isAuthenticatedUser, authorizeRoles('Admin', 'Employee'), allStores);
@@ -35,7 +37,8 @@ router.post("/admin/store/new", isAuthenticatedUser, authorizeRoles('Admin', 'Em
 router.route('/admin/store/restore/:id')
   .get(isAuthenticatedUser, authorizeRoles('Admin', 'Employee'), restoreStore)
 
-
+router.route('/admin/update-permit').patch(upload.single("image"), updatePermit);
+router.route('/admin/update-contract').patch(pdfupload.single("file"), updateContract);
 
 //////
 router.route("/stores").get(allStores);
