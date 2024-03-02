@@ -68,6 +68,27 @@ const storeSchema = new mongoose.Schema({
     type: Date,
     default: null
   },
+  permit: {
+    public_id: {
+      type: String,
+
+      required: false,
+    },
+    url: {
+      type: String,
+
+      required: false,
+    },
+    startedAt: {
+      type: Date,
+      default: null
+    },
+    expiration: {
+      type: Date,
+      default: null
+    }
+  },
+
   active: {
     type: Boolean,
     default: false,
